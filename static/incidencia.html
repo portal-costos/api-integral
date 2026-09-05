@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Incidencia tarifaria · Portal de Innovación y Análisis de Datos del ERSeP.">
+  <title>Incidencia tarifaria · Portal de Innovación y Análisis de Datos</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/portal-pages.css">
+  <link rel="stylesheet" href="/static/incidencia.css">
+  <link rel="stylesheet" href="/static/institutional-theme.css">
+  <link rel="icon" href="/static/favicon.ico">
+</head>
+<body class="tool-page area-water">
+<div class="wrap incidencia-wrap">
+  <header class="header">
+    <a class="page-brand" href="/" aria-label="Volver al menú principal">
+      <img src="/static/assets/img/institucional/logo-ersep.png" alt="ERSeP">
+    </a>
+    <div class="header-left">
+      <h1>Incidencia Tarifaria · ACSA + EPH</h1>
+      <span class="header-badge">Innovación y Análisis de Datos · Agua y Saneamiento</span>
+    </div>
+    <div class="header-right">
+      <span id="status">Listo para comenzar</span>
+      <button class="nav-chip" id="btn_home" title="Volver al menú"><span>⌂</span> Menú</button>
+      <button class="theme-toggle" id="btn_theme" title="Cambiar tema">🌙</button>
+      <button class="theme-toggle" id="btn_logout" title="Cerrar sesión">⏻</button>
+    </div>
+  </header>
+
+  <section class="tool-hero incidencia-hero">
+    <div>
+      <div class="tool-kicker">Asequibilidad de servicios públicos</div>
+      <h2>Subí la EPH, cargá las tarifas y obtené el análisis completo</h2>
+      <p>El sistema ordena los hogares por IPCF, construye la distribución acumulada con PONDIH, asigna los siete tramos zonales y calcula la incidencia con y sin impuestos.</p>
+    </div>
+    <div class="hero-symbol official-hero-logo gerencia" aria-hidden="true">
+      <img src="/static/assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
+    </div>
+  </section>
+
+  <div id="global_alert" class="tool-alert" style="display:none"></div>
+
+  <section class="workflow-strip" aria-label="Flujo de trabajo">
+    <div class="workflow-step active"><span>1</span><strong>Parámetros zonales</strong><small>21 valores editables</small></div>
+    <div class="workflow-step"><span>2</span><strong>Base EPH</strong><small>Archivo y mapeo</small></div>
+    <div class="workflow-step"><span>3</span><strong>Resultados</strong><small>Incidencia y percentiles</small></div>
+  </section>
+
+  <section class="card incidencia-card">
+    <div class="card-body">
+      <div class="incidencia-section-head">
+        <div>
+          <span class="section-kicker">Paso 1</span>
+          <h2>Parámetros de los siete zonales</h2>
+          <p>El orden Zonal 1 → Zonal 7 representa, por supuesto metodológico, menor → mayor ingreso. No se reordena por precio.</p>
+        </div>
+        <div class="incidencia-inline-actions">
+          <button class="action" id="btn_reset_zonales" type="button">Restaurar valores</button>
+          <button class="action" id="btn_save_zonales" type="button">Guardar en este navegador</button>
+        </div>
+      </div>
+
+      <div class="zonal-table-wrap">
+        <table class="zonal-input-table">
+          <thead>
+            <tr>
+              <th>Zonal</th>
+              <th>Usuarios %</th>
+              <th>Tarifa promedio con impuestos</th>
+              <th>Tarifa promedio sin impuestos</th>
+            </tr>
+          </thead>
+          <tbody id="zonal_inputs"></tbody>
+          <tfoot>
+            <tr>
+              <th>Total / promedio</th>
+              <td id="zonal_pct_total">—</td>
+              <td id="zonal_tarifa_media">—</td>
+              <td id="zonal_tarifa_sin_media">—</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="page-note">Los porcentajes pueden sumar 99,98 % u otro valor próximo a 100 % por redondeo. El backend los normaliza proporcionalmente y deja constancia en el resultado.</p>
+    </div>
+  </section>
+
+  <section class="card incidencia-card">
+    <div class="card-body">
+      <div class="incidencia-section-head">
+        <div>
+          <span class="section-kicker">Paso 2</span>
+          <h2>Cargar y mapear la Encuesta Permanente de Hogares</h2>
+          <p>Son obligatorias las columnas IPCF, ITF y PONDIH. Las demás mejoran la trazabilidad y el análisis.</p>
+        </div>
+        <button class="action" id="btn_template" type="button">Descargar plantilla EPH</button>
+      </div>
+
+      <div class="eph-upload-grid">
+        <label class="eph-file-box" for="eph_file">
+          <span class="eph-file-icon">⇧</span>
+          <strong id="file_title">Seleccionar Excel de hogares</strong>
+          <small id="file_subtitle">.xlsx o .xls · una fila por hogar</small>
+          <input type="file" id="eph_file" accept=".xlsx,.xls">
+        </label>
+        <div class="upload-actions">
+          <button class="action primary" id="btn_inspect" type="button" disabled>Inspeccionar archivo</button>
+          <small>El archivo se procesa en memoria. No se guarda en el servidor.</small>
+        </div>
+      </div>
+
+      <div id="mapping_panel" style="display:none">
+        <div class="incidencia-divider"></div>
+        <div class="incidencia-section-head compact">
+          <div>
+            <span class="section-kicker">Mapeo de columnas</span>
+            <h3>Confirmá qué columna corresponde a cada variable</h3>
+          </div>
+          <span class="incidencia-chip" id="rows_chip">— filas</span>
+        </div>
+
+        <div class="mapping-grid">
+          <label class="tool-field full">
+            <span>Hoja del Excel</span>
+            <select id="sheet_name"></select>
+          </label>
+          <label class="tool-field required-field">
+            <span>IPCF · ingreso per cápita familiar *</span>
+            <select id="col_ipcf"></select>
+          </label>
+          <label class="tool-field required-field">
+            <span>ITF · ingreso total familiar *</span>
+            <select id="col_itf"></select>
+          </label>
+          <label class="tool-field required-field">
+            <span>PONDIH · ponderador de ingresos *</span>
+            <select id="col_pondih"></select>
+          </label>
+          <label class="tool-field">
+            <span>IX_TOT · miembros del hogar</span>
+            <select id="col_miembros"></select>
+          </label>
+          <label class="tool-field">
+            <span>CODUSU</span>
+            <select id="col_codusu"></select>
+          </label>
+          <label class="tool-field">
+            <span>NRO_HOGAR</span>
+            <select id="col_nro_hogar"></select>
+          </label>
+          <label class="tool-field">
+            <span>Año</span>
+            <select id="col_anio"></select>
+          </label>
+          <label class="tool-field">
+            <span>Trimestre</span>
+            <select id="col_trimestre"></select>
+          </label>
+          <label class="tool-field">
+            <span>Aglomerado</span>
+            <select id="col_aglomerado"></select>
+          </label>
+          <label class="tool-field">
+            <span>Valor de aglomerado a conservar</span>
+            <input type="text" id="aglomerado_valor" value="13" inputmode="numeric">
+          </label>
+          <label class="tool-field">
+            <span>Decil ITF · opcional</span>
+            <select id="col_decil_itf"></select>
+          </label>
+          <label class="tool-field">
+            <span>Decil IPCF · opcional</span>
+            <select id="col_decil_ipcf"></select>
+          </label>
+        </div>
+
+        <label class="incidencia-check">
+          <input type="checkbox" id="eliminar_duplicados">
+          <span><strong>Eliminar duplicados por CODUSU + NRO_HOGAR</strong><small>Dejalo desmarcado para preservar exactamente la base. El resultado advertirá si detecta repetidos.</small></span>
+        </label>
+
+        <div class="preview-card">
+          <div class="preview-title"><strong>Vista previa del archivo</strong><span id="preview_meta">—</span></div>
+          <div class="incidencia-table-scroll"><table id="preview_table"></table></div>
+        </div>
+
+        <div class="process-row">
+          <div>
+            <strong>El cálculo se ejecutará con el orden IPCF ascendente.</strong>
+            <small>Se conservarán hogares con ITF = 0 y se excluirán PONDIH ≤ 0 o datos esenciales inválidos.</small>
+          </div>
+          <button class="action success process-button" id="btn_calculate" type="button">Calcular incidencia tarifaria</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="results_section" style="display:none">
+    <div class="results-topbar">
+      <div>
+        <span class="section-kicker">Paso 3</span>
+        <h2>Resultados del análisis</h2>
+        <p id="results_subtitle">—</p>
+      </div>
+      <button class="action primary" id="btn_export" type="button">Descargar Excel completo</button>
+    </div>
+
+    <div class="incidencia-kpis">
+      <article><span>Hogares expandidos</span><strong id="kpi_hogares">—</strong><small>Σ PONDIH</small></article>
+      <article><span>Tarifa media ponderada</span><strong id="kpi_tarifa">—</strong><small>Con impuestos</small></article>
+      <article class="featured"><span>Incidencia ponderada</span><strong id="kpi_incidencia">—</strong><small>Tarifa / ITF medio</small></article>
+      <article><span>Carga media positiva</span><strong id="kpi_carga">—</strong><small>Promedio hogar por hogar</small></article>
+      <article><span>Sin ingreso</span><strong id="kpi_sin_ingreso">—</strong><small>ITF ≤ 0</small></article>
+    </div>
+
+    <div id="results_warnings" class="warnings-stack"></div>
+    <div class="automatic-analysis">
+      <span class="section-kicker">Lectura automática</span>
+      <div id="automatic_analysis" class="automatic-analysis-grid"></div>
+    </div>
+
+    <nav class="results-tabs" aria-label="Resultados">
+      <button class="results-tab active" data-result-tab="zonales">Resultados zonales</button>
+      <button class="results-tab" data-result-tab="eph">Percentiles EPH</button>
+      <button class="results-tab" data-result-tab="zonales_pct">Percentiles por zonal</button>
+      <button class="results-tab" data-result-tab="metodo">Metodología</button>
+    </nav>
+
+    <div class="result-panel active" id="result-zonales">
+      <div class="card incidencia-card">
+        <div class="card-body">
+          <div class="incidencia-section-head">
+            <div>
+              <span class="section-kicker">Comparación</span>
+              <h3>Incidencia con y sin impuestos</h3>
+            </div>
+          </div>
+          <div id="incidence_bars" class="incidence-bars"></div>
+          <div class="incidencia-table-scroll"><table id="zonal_results_table"></table></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-panel" id="result-eph">
+      <div class="card incidencia-card"><div class="card-body">
+        <div class="incidencia-section-head compact"><div><span class="section-kicker">Distribución total</span><h3>Percentiles ponderados de la EPH</h3></div></div>
+        <div class="incidencia-table-scroll tall"><table id="eph_percentiles_table"></table></div>
+      </div></div>
+    </div>
+
+    <div class="result-panel" id="result-zonales_pct">
+      <div class="card incidencia-card"><div class="card-body">
+        <div class="incidencia-section-head compact"><div><span class="section-kicker">Distribución interna</span><h3>Percentiles de ingreso dentro de cada zonal imputado</h3></div></div>
+        <div class="incidencia-table-scroll tall"><table id="zonal_percentiles_table"></table></div>
+      </div></div>
+    </div>
+
+    <div class="result-panel" id="result-metodo">
+      <div class="card incidencia-card"><div class="card-body">
+        <div class="method-grid">
+          <div><span class="section-kicker">Supuesto central</span><h3>Qué representa el resultado</h3><p>La EPH no informa el zonal tarifario real de cada hogar. El modelo asigna la distribución de ingresos a los zonales respetando el orden socioeconómico Z1 → Z7 y la participación de usuarios ingresada.</p></div>
+          <ol id="method_list"></ol>
+        </div>
+      </div></div>
+    </div>
+  </section>
+</div>
+<script src="/static/incidencia.js" defer></script>
+</body>
+</html>

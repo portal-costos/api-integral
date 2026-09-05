@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Resoluciones de Transporte · Portal de Innovación y Análisis de Datos del ERSeP.">
+  <title>Resoluciones de Transporte · Portal de Innovación y Análisis de Datos</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/portal-pages.css">
+  <link rel="stylesheet" href="/static/boletin.css?v=20260724">
+  <link rel="stylesheet" href="/static/institutional-theme.css">
+  <link rel="icon" href="/static/favicon.ico">
+</head>
+<body class="tool-page boletin-page area-transport">
+<div class="wrap">
+  <header class="header">
+    <a class="page-brand" href="/" aria-label="Volver al menú principal">
+      <img src="/static/assets/img/institucional/logo-ersep.png" alt="ERSeP">
+    </a>
+    <div class="header-left">
+      <h1>Resoluciones de Transporte</h1>
+      <span class="header-badge">Innovación y Análisis de Datos · Transporte Interurbano</span>
+    </div>
+    <div class="header-right">
+      <span id="status">Preparando módulo...</span>
+      <button class="nav-chip tutorial-chip" id="btn_tutorial" type="button"><span>?</span> Tutorial</button>
+      <button class="nav-chip" id="btn_home"><span>⌂</span> Menú</button>
+      <button class="theme-toggle" id="btn_theme" title="Cambiar tema">🌙</button>
+      <button class="theme-toggle" id="btn_logout" title="Cerrar sesión">⏻</button>
+    </div>
+  </header>
+
+  <section class="tool-hero boletin-hero">
+    <div>
+      <div class="tool-kicker">Secretaría de Transporte</div>
+      <h2>Detectá todas sus resoluciones sin cargar alertas</h2>
+      <p>Recorre automáticamente la 1.ª Sección del año seleccionado, identifica las resoluciones emitidas por la Secretaría de Transporte y conserva un historial de publicaciones nuevas o modificadas.</p>
+    </div>
+    <div class="hero-symbol official-hero-logo gerencia" aria-hidden="true">
+      <img src="/static/assets/img/institucional/gerencia-transporte-interurbano.png" alt="">
+    </div>
+  </section>
+
+  <nav class="boletin-tabs" aria-label="Secciones del módulo">
+    <button class="boletin-tab active" data-tab="monitor">Búsqueda automática</button>
+    <button class="boletin-tab" data-tab="history">Historial</button>
+  </nav>
+
+  <div id="global_alert" class="tool-alert" style="display:none"></div>
+
+  <section class="boletin-view active" id="view_monitor">
+    <div class="card">
+      <div class="card-body">
+        <div class="monitor-form-grid">
+          <label class="tool-field compact-field">
+            <span>Año a revisar</span>
+            <select id="monitor_year"></select>
+          </label>
+          <div class="monitor-options">
+            <label class="check-row"><input type="checkbox" id="monitor_revalidate"><span>Revalidar PDFs ya procesados</span></label>
+            <label class="check-row"><input type="checkbox" id="monitor_unchanged"><span>Mostrar también registros sin cambios</span></label>
+          </div>
+        </div>
+        <div class="monitor-actions">
+          <button class="action primary" id="btn_start_monitor" type="button">▶ Buscar resoluciones de Transporte</button>
+          <button class="action danger-action" id="btn_stop_monitor" type="button" disabled>■ Detener</button>
+          <span class="action-separator"></span>
+          <button class="action" id="btn_save_txt" type="button" disabled>Guardar TXT para IA</button>
+          <button class="action" id="btn_copy_txt" type="button" disabled>Copiar TXT completo</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="monitor-progress card">
+      <div class="card-body">
+        <div class="progress-heading">
+          <div>
+            <span class="progress-kicker" id="progress_state">Sin ejecución activa</span>
+            <strong id="progress_message">Elegí el año y presioná Buscar resoluciones.</strong>
+          </div>
+          <span class="progress-number" id="progress_percent">0%</span>
+        </div>
+        <div class="progress-track" aria-label="Progreso de la búsqueda"><span id="progress_bar"></span></div>
+        <div class="kpi-grid">
+          <article class="kpi-card"><span>Meses procesados</span><strong id="kpi_months">0 / 12</strong></article>
+          <article class="kpi-card"><span>PDFs analizados</span><strong id="kpi_pdfs">0</strong></article>
+          <article class="kpi-card"><span>Resoluciones de Transporte</span><strong id="kpi_resolutions">0</strong></article>
+          <article class="kpi-card accent"><span>Novedades</span><strong id="kpi_news">0</strong></article>
+          <article class="kpi-card danger"><span>Errores</span><strong id="kpi_errors">0</strong></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="results-section">
+      <div class="section-heading">
+        <div>
+          <span class="tool-kicker">Resultado de la ejecución</span>
+          <h3>Resoluciones encontradas</h3>
+        </div>
+        <div class="results-heading-actions">
+          <span class="result-counter" id="result_counter">0 publicaciones</span>
+          <button class="action compact-action" id="btn_clear_findings" type="button" disabled>Limpiar hallazgos</button>
+        </div>
+      </div>
+      <div id="monitor_results" class="monitor-results">
+        <div class="empty-state">
+          <div class="empty-icon">⌕</div>
+          <strong>Todavía no hay hallazgos</strong>
+          <p>Las resoluciones nuevas o modificadas aparecerán aquí durante la búsqueda.</p>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <section class="boletin-view" id="view_history">
+    <div class="section-heading history-heading">
+      <div>
+        <span class="tool-kicker">Base independiente SQLite</span>
+        <h3>Historial de resoluciones de Transporte</h3>
+      </div>
+      <div class="history-export-actions">
+        <button class="action" id="btn_export_json" type="button">Exportar JSON</button>
+        <button class="action primary" id="btn_export_excel" type="button">Exportar Excel</button>
+      </div>
+    </div>
+
+    <div class="card history-filter-card">
+      <div class="card-body">
+        <div class="history-filters">
+          <label class="tool-field wide-filter"><span>Buscar texto</span><input id="history_text" type="search" placeholder="Resolución, expediente, empresa, localidad o contenido..."></label>
+          <label class="tool-field"><span>Año</span><select id="history_year"><option value="">Todos</option></select></label>
+          <label class="tool-field"><span>Clasificación</span><select id="history_state"><option value="">Todas</option></select></label>
+          <label class="tool-field"><span>Destinatario / asunto</span><input id="history_provider" type="text" placeholder="Nombre parcial"></label>
+          <label class="check-row history-check"><input type="checkbox" id="history_news_only"><span>Solo novedades recientes</span></label>
+          <button class="action primary filter-button" id="btn_history_filter" type="button">Aplicar filtros</button>
+          <button class="action filter-button" id="btn_history_clear" type="button">Limpiar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body no-pad-mobile">
+        <div class="table-wrap">
+          <table class="boletin-table history-table">
+            <thead><tr><th>Publicación</th><th>Resolución</th><th>Destinatario / asunto</th><th>Clasificación</th><th>Primera detección</th><th>Última verificación</th><th>Verif.</th><th>Cambio</th><th></th></tr></thead>
+            <tbody id="history_table"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button class="action" id="history_prev" type="button">← Anterior</button>
+          <span id="history_page_label">Página 1 de 1</span>
+          <button class="action" id="history_next" type="button">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-shell" id="detail_modal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="detail"></div>
+  <section class="modal-card detail-modal-card" role="dialog" aria-modal="true" aria-labelledby="detail_title">
+    <header class="modal-header">
+      <div>
+        <span class="modal-kicker" id="detail_badge">Resolución de Transporte</span>
+        <h3 id="detail_title">Detalle de resolución</h3>
+      </div>
+      <button class="modal-close" data-close="detail" type="button">×</button>
+    </header>
+    <div class="detail-meta" id="detail_meta"></div>
+    <div id="detail_warning" class="tool-alert" style="display:none"></div>
+    <div class="detail-actions">
+      <button class="action primary" id="detail_open_pdf" type="button">Abrir PDF oficial</button>
+      <button class="action" id="detail_download_pdf" type="button">Descargar PDF</button>
+      <button class="action" id="detail_copy_full" type="button">Copiar resolución</button>
+      <button class="action" id="detail_copy_resuelve" type="button">Copiar RESUELVE</button>
+    </div>
+    <div class="detail-grid">
+      <section class="detail-text-card">
+        <div class="detail-text-title">Bloque RESUELVE</div>
+        <pre id="detail_resuelve"></pre>
+      </section>
+      <section class="detail-text-card full-text">
+        <div class="detail-text-title">Resolución completa extraída</div>
+        <pre id="detail_full"></pre>
+      </section>
+    </div>
+  </section>
+</div>
+
+<div class="modal-shell" id="tutorial_modal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="tutorial"></div>
+  <section class="modal-card tutorial-modal-card" role="dialog" aria-modal="true" aria-labelledby="tutorial_title">
+    <header class="modal-header">
+      <div><span class="modal-kicker">Guía rápida</span><h3 id="tutorial_title">Cómo usar la búsqueda</h3></div>
+      <button class="modal-close" data-close="tutorial" type="button">×</button>
+    </header>
+    <div class="tutorial-intro">
+      <strong>No hace falta crear alertas ni cargar palabras clave</strong>
+      <p>La herramienta reconoce automáticamente la cabecera institucional y la fórmula “EL SECRETARIO DE TRANSPORTE — RESUELVE”.</p>
+    </div>
+    <ol class="tutorial-steps">
+      <li><span class="tutorial-number">1</span><div><h4>Elegí el año</h4><p>La búsqueda recorrerá los doce meses y analizará los ejemplares de la 1.ª Sección.</p></div></li>
+      <li><span class="tutorial-number">2</span><div><h4>Iniciá la búsqueda</h4><p>Se guardarán automáticamente todas las resoluciones identificadas como propias de la Secretaría de Transporte.</p></div></li>
+      <li><span class="tutorial-number">3</span><div><h4>Revisá las novedades</h4><p><b>NUEVO</b> indica una resolución no registrada previamente. <b>MODIFICADO</b> indica cambios en el texto detectado.</p></div></li>
+      <li><span class="tutorial-number">4</span><div><h4>Consultá el historial</h4><p>Podés buscar por expediente, empresa, persona, localidad, resolución o contenido, y exportar el resultado a Excel o JSON.</p></div></li>
+    </ol>
+    <section class="tutorial-options">
+      <h4>Opciones adicionales</h4>
+      <p><b>Revalidar PDFs:</b> vuelve a descargar ejemplares ya procesados para comprobar si fueron sustituidos o corregidos.</p>
+      <p><b>Mostrar sin cambios:</b> incluye en pantalla resoluciones ya conocidas cuyo contenido continúa igual.</p>
+    </section>
+    <div class="modal-form-actions tutorial-close-actions">
+      <button class="action primary" data-close="tutorial" type="button">Entendido</button>
+    </div>
+  </section>
+</div>
+
+<script src="/static/transporte.js?v=20260724" defer></script>
+</body>
+</html>

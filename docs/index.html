@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Herramientas regulatorias de Costos y Tarifas · Portal de Innovación y Análisis de Datos del ERSeP.">
+  <title>Costos y Tarifas · Portal de Innovación y Análisis de Datos</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./standalone.css">
+  <link rel="stylesheet" href="./institutional-theme.css">
+  <link rel="icon" href="./favicon.ico">
+</head>
+<body>
+
+<!-- ACCESO -->
+<section id="login-screen" class="portal-screen login-screen">
+  <div class="portal-orbit portal-orbit-one"></div>
+  <div class="portal-orbit portal-orbit-two"></div>
+  <div class="login-service-bar" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="login-shell">
+    <div class="login-brand">
+      <div class="login-brand-logo">
+        <img src="./assets/img/institucional/logo-ersep.png"
+             alt="ERSeP · Ente Regulador de los Servicios Públicos">
+      </div>
+      <div class="login-brand-copy">
+        <div class="login-eyebrow">Portal de Innovación y Análisis de Datos</div>
+        <h1>Costos y Tarifas</h1>
+        <p>Indicadores, cálculos y herramientas para el análisis regulatorio.</p>
+      </div>
+    </div>
+
+    <div class="login-card portal-glass">
+      <div class="login-lock" aria-hidden="true">●</div>
+      <h2 class="login-title">Acceso al sistema</h2>
+      <p class="login-sub">Ingresá tu contraseña para continuar.</p>
+      <label class="field-label" for="login-input">Contraseña</label>
+      <input type="password" id="login-input" class="search-box login-input"
+             placeholder="Ingresá la contraseña..." autocomplete="current-password">
+      <div id="login-error" class="login-error" style="display:none;">
+        Contraseña incorrecta. Intentá de nuevo.
+      </div>
+      <button class="action primary login-submit" id="btn-login" type="button">Ingresar</button>
+      <p class="login-help">Uso exclusivo del equipo de Costos y Tarifas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BIENVENIDA ANIMADA -->
+<section id="welcome-screen" class="portal-screen welcome-screen" style="display:none;">
+  <div class="welcome-grid" aria-hidden="true"></div>
+  <div class="welcome-content">
+    <div class="welcome-logo">
+      <img src="./assets/img/institucional/logo-ersep.png" alt="ERSeP">
+    </div>
+    <div class="welcome-emblem" aria-hidden="true">
+      <span class="welcome-bar b1"></span>
+      <span class="welcome-bar b2"></span>
+      <span class="welcome-bar b3"></span>
+      <span class="welcome-bar b4"></span>
+      <span class="welcome-bar b5"></span>
+      <span class="welcome-bar b6"></span>
+    </div>
+    <div class="welcome-kicker">Portal de Innovación y Análisis de Datos</div>
+    <h2>Bienvenido al panel de trabajo</h2>
+    <p>Preparando indicadores, tasas y herramientas regulatorias.</p>
+    <div class="welcome-loader"><span></span></div>
+  </div>
+</section>
+
+<!-- MENÚ PRINCIPAL -->
+<section id="menu-screen" class="portal-screen menu-screen" style="display:none;">
+  <div class="menu-topbar">
+    <div class="menu-brand">
+      <span class="menu-brand-logo-wrap">
+        <img class="menu-brand-logo"
+             src="./assets/img/institucional/logo-ersep.png"
+             alt="ERSeP · Ente Regulador de los Servicios Públicos">
+      </span>
+      <span class="menu-brand-copy">
+        <strong>Innovación y Análisis de Datos</strong>
+        <span>Costos y Tarifas · Herramientas regulatorias</span>
+      </span>
+    </div>
+    <div class="menu-actions">
+      <span class="portal-scope">Entorno interno</span>
+      <button class="theme-toggle" id="btn_theme_menu" title="Cambiar modo claro/oscuro">🌙</button>
+      <button class="theme-toggle" id="btn_logout_menu" title="Cerrar sesión">⏻</button>
+    </div>
+  </div>
+  <div class="service-color-bar" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <main class="menu-main">
+    <header class="menu-hero">
+      <div class="menu-hero-copy">
+        <div class="menu-kicker">Subdirección de Jurisdicción de Costos y Tarifas</div>
+        <h1>Herramientas de análisis regulatorio</h1>
+        <p>Un acceso integrado a los módulos de datos económicos, cálculo, monitoreo y elaboración técnica.</p>
+        <div class="hero-tags" aria-label="Ejes del sistema">
+          <span>Datos</span>
+          <span>Automatización</span>
+          <span>Regulación</span>
+        </div>
+      </div>
+      <div class="hero-brand-panel" aria-hidden="true">
+        <img src="./assets/img/institucional/logo-ersep.png" alt="">
+        <strong>COSTOS Y TARIFAS</strong>
+        <div class="hero-brand-lines">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </header>
+
+    <div class="tool-grid">
+      <button class="tool-card featured area-water" id="menu_stats" type="button">
+        <span class="tool-icon gerencia-card-icon">
+          <img src="./assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
+        </span>
+        <span class="tool-meta">Agua y Saneamiento · Análisis principal</span>
+        <strong>Estadísticas y evolución</strong>
+        <small>Consultar índices, comparar períodos, ver gráficos mensuales y actualizar la base.</small>
+        <span class="menu-card-badge">Disponible</span>
+        <span class="tool-arrow">Abrir →</span>
+      </button>
+
+      <button class="tool-card area-water" id="menu_arca" type="button">
+        <span class="tool-icon gerencia-card-icon">
+          <img src="./assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
+        </span>
+        <span class="tool-meta">Costos y Tarifas · ARCA</span>
+        <strong>Tasas ARCA</strong>
+        <small>Cálculo individual, procesamiento de Excel y evolución de tasas.</small>
+        <span class="menu-card-badge">Disponible</span>
+        <span class="tool-arrow">Abrir →</span>
+      </button>
+
+      <button class="tool-card area-water" id="menu_evol" type="button">
+        <span class="tool-icon gerencia-card-icon">
+          <img src="./assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
+        </span>
+        <span class="tool-meta">Datos estadísticos · Series</span>
+        <strong>Ir directo a la evolución</strong>
+        <small>Acceso rápido al bloque gráfico integrado dentro del panel de estadísticas.</small>
+        <span class="menu-card-badge">Disponible</span>
+        <span class="tool-arrow">Abrir →</span>
+      </button>
+
+      <button class="tool-card area-water" id="menu_it" type="button">
+        <span class="tool-icon gerencia-card-icon">
+          <img src="./assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
+        </span>
+        <span class="tool-meta">Costos y Tarifas · Documentación</span>
+        <strong>Generar IT</strong>
+        <small>Preparar y descargar un Informe Técnico de Costos y Tarifas.</small>
+        <span class="menu-card-badge">Disponible</span>
+        <span class="tool-arrow">Abrir →</span>
+      </button>
+
+
+      <button class="tool-card area-water" id="menu_incidencia" type="button">
+        <span class="tool-icon gerencia-card-icon">
+          <img src="./assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
+        </span>
+        <span class="tool-meta">Agua y Saneamiento · Asequibilidad</span>
+        <strong>Incidencia tarifaria</strong>
+        <small>Cargar la EPH, asignar percentiles por zonal y medir el peso de las tarifas de ACSA.</small>
+        <span class="menu-card-badge">Disponible</span>
+        <span class="tool-arrow">Abrir →</span>
+      </button>
+
+      <button class="tool-card area-institutional" id="menu_boletin" type="button">
+        <span class="tool-icon institutional-card-icon">
+          <img src="./assets/img/institucional/logo-ersep.png" alt="">
+        </span>
+        <span class="tool-meta">Normativa · Monitoreo regulatorio</span>
+        <strong>Boletín Oficial</strong>
+        <small>Detectar resoluciones ERSeP, novedades tarifarias y publicaciones vinculadas con prestadoras y cooperativas.</small>
+        <span class="menu-card-badge">Disponible</span>
+        <span class="tool-arrow">Abrir →</span>
+      </button>
+
+      <button class="tool-card area-transport" id="menu_transporte" type="button">
+        <span class="tool-icon gerencia-card-icon">
+          <img src="./assets/img/institucional/gerencia-transporte-interurbano.png" alt="">
+        </span>
+        <span class="tool-meta">Transporte Interurbano · Búsqueda automática</span>
+        <strong>Resoluciones de Transporte</strong>
+        <small>Detectar todas las resoluciones de la Secretaría de Transporte sin configurar alertas ni palabras clave.</small>
+        <span class="menu-card-badge">Disponible</span>
+        <span class="tool-arrow">Abrir →</span>
+      </button>
+
+      <button class="tool-card area-water" id="menu_cumple" type="button">
+        <span class="tool-icon gerencia-card-icon">
+          <img src="./assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
+        </span>
+        <span class="tool-meta">Agenda interna · Costos y Tarifas</span>
+        <strong>Cumpleaños CyT</strong>
+        <small>Consultar los próximos cumpleaños del equipo de Costos y Tarifas.</small>
+        <span class="menu-card-badge private">Acceso interno</span>
+        <span class="tool-arrow">Abrir →</span>
+      </button>
+
+      <button class="tool-card area-institutional" id="menu_cumple_rrhh" type="button">
+        <span class="tool-icon institutional-card-icon">
+          <img src="./assets/img/institucional/logo-ersep.png" alt="">
+        </span>
+        <span class="tool-meta">Recursos Humanos · ERSeP</span>
+        <strong>Cumpleaños RR.HH. ERSeP</strong>
+        <small>Consultar la nómina completa y filtrar los cumpleaños por Gerencia o Área.</small>
+        <span class="menu-card-badge private">Acceso protegido</span>
+        <span class="tool-arrow">Abrir →</span>
+      </button>
+    </div>
+  </main>
+
+  <footer class="menu-footer">
+    <img src="./assets/img/institucional/logo-ersep.png" alt="ERSeP">
+    <span>Portal de Innovación y Análisis de Datos · Costos y Tarifas</span>
+  </footer>
+</section>
+
+<!-- PANEL DE ESTADÍSTICAS -->
+<section id="app-screen" class="tool-page area-water stats-screen" style="display:none;">
+  <div class="wrap">
+    <header class="header">
+      <a class="page-brand" href="./index.html" aria-label="Volver al menú principal">
+        <img src="./assets/img/institucional/logo-ersep.png" alt="ERSeP">
+      </a>
+      <div class="header-left">
+        <h1>Panel de Estadísticas · Costos y Tarifas</h1>
+        <span class="header-badge">Portal de Innovación y Análisis de Datos · Sistema de índices</span>
+      </div>
+      <div class="header-right">
+        <span id="status">Cargando sistema...</span>
+        <button class="nav-chip" id="btn_menu" title="Volver al menú"><span>⌂</span> Menú</button>
+        <button class="nav-chip" id="btn_calc" title="Abrir Tasas ARCA"><span>%</span> Tasas ARCA</button>
+        <button class="nav-chip" id="btn_evol" title="Abrir evolución"><span>⌁</span> Evolución</button>
+        <button class="nav-chip compact-chip" id="btn_incidencia" title="Análisis de incidencia tarifaria"><span>◒</span> Incidencia</button>
+        <button class="nav-chip compact-chip" id="btn_boletin" title="Monitoreo del Boletín Oficial"><span>⌕</span> Boletín</button>
+        <button class="nav-chip compact-chip" id="btn_it" title="Generar Informe Técnico"><span>▤</span> IT</button>
+        <button class="nav-chip compact-chip" id="btn_cumple" title="Cumpleaños CyT"><span>✦</span> Cumple CyT</button>
+        <button class="nav-chip compact-chip" id="btn_cumple_rrhh" title="Cumpleaños RR.HH. ERSeP"><span>🎂</span> Cumple RR.HH.</button>
+        <button class="theme-toggle" id="btn_theme" title="Cambiar modo claro/oscuro">🌙</button>
+        <button class="theme-toggle" id="btn_logout" title="Cerrar sesión">⏻</button>
+      </div>
+    </header>
+
+    <section class="stats-dashboard-intro" aria-labelledby="stats-dashboard-title">
+      <div class="stats-dashboard-copy">
+        <span class="stats-dashboard-eyebrow">Base económica y regulatoria</span>
+        <h2 id="stats-dashboard-title">Una sola vista para consultar, comparar y entender los índices</h2>
+        <p>Seleccioná las series, definí el período y trabajá con tabla, variaciones y evolución mensual sin salir del panel.</p>
+      </div>
+      <div class="stats-dashboard-pills" aria-label="Funciones disponibles">
+        <span>Datos históricos</span>
+        <span>Variaciones</span>
+        <span>Gráficos mensuales</span>
+      </div>
+    </section>
+
+    <div class="card stats-control-card">
+      <div class="card-body">
+        <div class="section-heading-row">
+          <div>
+            <span class="section-kicker">Área de consulta</span>
+            <h2>Preparar análisis</h2>
+            <p>La selección y las fechas se reutilizan automáticamente en las tablas y en los gráficos inferiores.</p>
+          </div>
+          <div class="selection-counter" aria-live="polite">
+            <strong id="selected_series_count">0</strong>
+            <span>series elegidas</span>
+          </div>
+        </div>
+
+        <div class="main-grid">
+          <div class="series-container">
+            <label class="field-label">1. Buscar y seleccionar índices (Ctrl+Click)</label>
+            <input type="text" id="search_series" class="search-box"
+                   placeholder="Escribe para buscar (ej: 'IPC Córdoba' o 'Alquileres')...">
+            <select id="sel_col" multiple></select>
+            <div class="sel-actions">
+              <button class="btn-sm" id="btn_sel_all" type="button">Seleccionar visibles</button>
+              <button class="btn-sm" id="btn_desel" type="button">Limpiar selección</button>
+            </div>
+          </div>
+
+          <aside class="side-panel">
+            <div class="date-control">
+              <label class="field-label">2. Desde</label>
+              <button class="date-btn" id="btn_pick_desde" type="button">
+                <span class="date-btn-label">Seleccionar mes</span>
+                <span class="date-btn-value" id="txt_desde">-</span>
+              </button>
+              <select id="sel_desde" class="date-select" style="display:none;"></select>
+              <div class="date-step-row" aria-label="Mover fecha desde">
+                <button class="date-step" data-target="desde" data-step="-5" type="button">−5</button>
+                <button class="date-step" data-target="desde" data-step="-1" type="button">−1</button>
+                <span>meses</span>
+                <button class="date-step" data-target="desde" data-step="1" type="button">+1</button>
+                <button class="date-step" data-target="desde" data-step="5" type="button">+5</button>
+              </div>
+            </div>
+
+            <div class="date-control">
+              <label class="field-label">3. Hasta</label>
+              <button class="date-btn" id="btn_pick_hasta" type="button">
+                <span class="date-btn-label">Seleccionar mes</span>
+                <span class="date-btn-value" id="txt_hasta">-</span>
+              </button>
+              <select id="sel_hasta" class="date-select" style="display:none;"></select>
+              <div class="date-step-row" aria-label="Mover fecha hasta">
+                <button class="date-step" data-target="hasta" data-step="-5" type="button">−5</button>
+                <button class="date-step" data-target="hasta" data-step="-1" type="button">−1</button>
+                <span>meses</span>
+                <button class="date-step" data-target="hasta" data-step="1" type="button">+1</button>
+                <button class="date-step" data-target="hasta" data-step="5" type="button">+5</button>
+              </div>
+            </div>
+
+            <div class="btns-group">
+              <button class="action primary" id="btn_filtrar" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                Ver tabla de datos filtrados
+              </button>
+              <button class="action success" id="btn_analizar" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                Calcular variaciones
+              </button>
+              <button class="action" id="btn_copiar" type="button">Copiar tabla</button>
+              <button class="action" id="btn_reload" type="button">Recargar vista desde Drive</button>
+            </div>
+
+            <div class="auto-update-box">
+              <div class="auto-update-kicker">Actualización automática</div>
+              <div class="auto-update-title">Google Sheets · últimos 6 meses cerrados</div>
+              <p class="auto-update-text">Actualiza las series en la pestaña <strong>Series originales</strong> y devuelve un reporte técnico.</p>
+              <button class="action primary auto-update-btn" id="btn_actualizar_indices" type="button">
+                <span class="btn-spinner" id="spinner_actualizar_indices" aria-hidden="true"></span>
+                <span id="txt_actualizar_indices">Actualizar Índices Automáticamente 🔄</span>
+              </button>
+              <button class="action auto-update-btn" id="btn_diagnosticar_fuentes" type="button">
+                Diagnosticar fuentes sin modificar la planilla
+              </button>
+              <a class="action sheet-link-btn" id="btn_abrir_sheet"
+                 href="https://docs.google.com/spreadsheets/d/1gF9d5ZBT1Rwa5yq9jJxiXgjwXke5jEAlCM-Qd99XDog/edit?gid=883561078#gid=883561078"
+                 target="_blank" rel="noopener noreferrer">Abrir base de datos (Manual) 🌐</a>
+              <div class="update-status" id="update_status" style="display:none;"></div>
+              <details class="update-report" id="update_report_box" style="display:none;">
+                <summary>Ver reporte técnico</summary>
+                <pre id="update_report"></pre>
+              </details>
+            </div>
+          </aside>
+        </div>
+
+        <section class="results-zone" aria-labelledby="results-zone-title">
+          <div class="results-zone-head">
+            <div>
+              <span class="section-kicker">Salida del análisis</span>
+              <h2 id="results-zone-title">Resultados</h2>
+            </div>
+            <p>Las vistas se actualizan sin alterar la base original.</p>
+          </div>
+
+        <div id="hint" class="hint-toast">✓ ¡Datos copiados al portapapeles!</div>
+
+        <div id="view_tabla" class="table-wrap">
+          <table id="tbl"><thead><tr></tr></thead><tbody></tbody></table>
+        </div>
+
+        <div id="view_analisis" class="table-wrap" style="display:none;">
+          <table id="tbl_vars">
+            <thead><tr><th>Índice</th><th style="text-align:right;">Valor inicial</th><th style="text-align:right;">Valor final</th><th style="text-align:right;">Variación % (punta a punta)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="view_grafico" class="table-wrap" style="display:none;">
+          <div class="chart-header">
+            <div id="chart_title"></div>
+            <div class="chart-subtitle">Variación porcentual punta a punta por índice seleccionado</div>
+          </div>
+          <div id="chart_body"></div>
+        </div>
+        </section>
+      </div>
+    </div>
+
+    <section id="evolution-section" class="evolution-dashboard" aria-labelledby="evolution-title">
+      <div class="evolution-dashboard-head">
+        <div>
+          <span class="section-kicker">Lectura temporal</span>
+          <h2 id="evolution-title">Evolución mensual</h2>
+          <p>Usa las mismas series y el mismo período elegidos arriba. Podés alternar entre valores, base 100 y variación mensual.</p>
+        </div>
+        <div class="evolution-toolbar">
+          <div class="segmented-control" role="group" aria-label="Modo del gráfico">
+            <button class="segment-btn active" type="button" data-evol-mode="values">Valores</button>
+            <button class="segment-btn" type="button" data-evol-mode="base100">Base 100</button>
+            <button class="segment-btn" type="button" data-evol-mode="mom">Variación mensual</button>
+          </div>
+          <button class="action primary evolution-refresh" id="btn_refresh_evolution" type="button">Actualizar gráficos</button>
+        </div>
+      </div>
+
+      <div class="evolution-summary-grid">
+        <article class="metric-card">
+          <span>Series comparadas</span>
+          <strong id="evol_metric_series_count">0</strong>
+          <small>selección actual</small>
+        </article>
+        <article class="metric-card">
+          <span>Período analizado</span>
+          <strong id="evol_metric_period">—</strong>
+          <small>desde → hasta</small>
+        </article>
+        <article class="metric-card">
+          <span>Variación principal</span>
+          <strong id="evol_metric_growth">—</strong>
+          <small>punta a punta</small>
+        </article>
+        <article class="metric-card">
+          <span>Promedio mensual</span>
+          <strong id="evol_metric_avg">—</strong>
+          <small>serie principal</small>
+        </article>
+      </div>
+
+      <div class="evolution-main-grid">
+        <article class="chart-surface evolution-line-surface">
+          <div class="chart-surface-head">
+            <div>
+              <h3>Trayectoria de las series</h3>
+              <p id="evol_line_subtitle">Seleccioná índices y presioná “Actualizar gráficos”.</p>
+            </div>
+            <label class="evolution-main-picker">
+              <span>Serie principal</span>
+              <select id="evol_main_series" aria-label="Serie principal para métricas"></select>
+            </label>
+          </div>
+          <div id="inline_line_chart" class="plotly-host">
+            <div class="chart-empty-state">
+              <span class="chart-empty-icon">⌁</span>
+              <strong>La evolución aparecerá aquí</strong>
+              <p>Elegí una o más series en el panel superior y actualizá los gráficos.</p>
+            </div>
+          </div>
+        </article>
+
+        <aside class="evolution-insights">
+          <div class="insights-head">
+            <span class="section-kicker">Resumen de la principal</span>
+            <h3 id="evol_insight_series">Sin serie seleccionada</h3>
+          </div>
+          <div class="insight-list">
+            <div class="insight-item">
+              <span>Mejor mes</span>
+              <strong id="evol_best_month">—</strong>
+            </div>
+            <div class="insight-item">
+              <span>Mes más bajo</span>
+              <strong id="evol_worst_month">—</strong>
+            </div>
+            <div class="insight-item">
+              <span>Volatilidad mensual</span>
+              <strong id="evol_volatility">—</strong>
+            </div>
+            <div class="insight-item">
+              <span>Observaciones válidas</span>
+              <strong id="evol_observations">—</strong>
+            </div>
+          </div>
+          <p class="insights-note">La serie principal se destaca en el gráfico y alimenta las métricas de esta columna.</p>
+        </aside>
+      </div>
+
+      <article class="chart-surface evolution-mom-surface">
+        <div class="chart-surface-head">
+          <div>
+            <h3>Variación mes a mes de la serie principal</h3>
+            <p>Permite detectar aceleraciones, desaceleraciones y meses atípicos.</p>
+          </div>
+        </div>
+        <div id="inline_mom_chart" class="plotly-host compact">
+          <div class="chart-empty-state small">Esperando una serie principal.</div>
+        </div>
+      </article>
+    </section>
+
+    <div id="panel_indices_elegidos" class="panel-indices" style="display:none;">
+      <div class="panel-head">
+        <div class="panel-title">Índices elegidos</div>
+        <button id="btn_toggle_panel" class="panel-toggle" type="button" title="Ocultar/Mostrar">▾</button>
+      </div>
+      <div id="lista_indices_elegidos"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SELECTOR DE MESES -->
+<div id="monthModal" class="month-modal" style="display:none;">
+  <div class="month-modal-backdrop" id="monthBackdrop"></div>
+  <div class="month-modal-card" role="dialog" aria-modal="true" aria-labelledby="monthTitle">
+    <div class="month-modal-head">
+      <div class="month-modal-title" id="monthTitle">Seleccionar mes</div>
+      <button class="month-close" id="monthClose" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="month-nav">
+      <button class="month-nav-btn jump" id="yearPrev5" type="button" title="Retroceder cinco años">−5</button>
+      <button class="month-nav-btn" id="yearPrev" type="button" title="Año anterior">◀</button>
+      <div class="month-year" id="yearLabel">2026</div>
+      <button class="month-nav-btn" id="yearNext" type="button" title="Año siguiente">▶</button>
+      <button class="month-nav-btn jump" id="yearNext5" type="button" title="Avanzar cinco años">+5</button>
+    </div>
+    <div class="month-grid" id="monthGrid"></div>
+    <div class="month-footer">
+      <div class="month-help" id="monthHelp">Elegí un mes</div>
+      <button class="month-ok" id="monthOk" type="button">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="./script.js?v=20260727-cumpleanos-rrhh-v1" defer></script>
+<script src="./config.js"></script>
+</body>
+</html>

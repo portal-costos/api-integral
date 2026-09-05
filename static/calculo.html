@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Cálculo de intereses ARCA · Portal de Innovación y Análisis de Datos del ERSeP.">
+  <title>Intereses ARCA · Portal de Innovación y Análisis de Datos</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/portal-pages.css">
+  <link rel="stylesheet" href="/static/calculo.css">
+  <link rel="stylesheet" href="/static/institutional-theme.css">
+  <link rel="icon" href="/static/favicon.ico">
+</head>
+<body class="tool-page area-water">
+<div class="wrap">
+  <header class="header">
+    <a class="page-brand" href="/" aria-label="Volver al menú principal">
+      <img src="/static/assets/img/institucional/logo-ersep.png" alt="ERSeP">
+    </a>
+    <div class="header-left">
+      <h1>ARCA — Intereses Resarcitorios</h1>
+      <span class="header-badge">Innovación y Análisis de Datos · Costos y Tarifas</span>
+    </div>
+    <div class="header-right">
+      <span id="status">Inicializando...</span>
+      <button class="nav-chip" id="btn_home" title="Volver al menú"><span>⌂</span> Menú</button>
+      <button class="theme-toggle" id="btn_theme" title="Cambiar tema">🌙</button>
+      <button class="theme-toggle" id="btn_logout" title="Cerrar sesión">⏻</button>
+    </div>
+  </header>
+
+  <section class="tool-hero arca-hero">
+    <div>
+      <div class="arca-kicker">Tasas oficiales y respaldo local</div>
+      <h2>Calculá una obligación o procesá un Excel completo</h2>
+      <p>El backend consulta las tasas de ARCA, calcula cada tramo y genera un libro con resultados, resumen, tasas utilizadas y detalle.</p>
+    </div>
+    <div class="rate-pill" id="rate_pill">
+      <span class="rate-pill-label">Última tasa</span>
+      <strong id="rate_value">—</strong>
+      <span id="rate_period">Cargando...</span>
+    </div>
+  </section>
+
+  <div id="global_alert" class="arca-alert" style="display:none"></div>
+
+  <nav class="arca-tabs" aria-label="Módulos ARCA">
+    <button class="arca-tab active" data-tab="individual">Cálculo individual</button>
+    <button class="arca-tab" data-tab="excel">Procesar Excel</button>
+    <button class="arca-tab" data-tab="rates">Tasas utilizadas</button>
+  </nav>
+
+  <section class="arca-panel active" id="tab-individual">
+    <div class="card">
+      <div class="card-body">
+        <div class="arca-section-head">
+          <div>
+            <div class="arca-kicker">Una obligación</div>
+            <h2>Datos del cálculo</h2>
+          </div>
+          <button class="action" id="btn_clear_calc" type="button">Limpiar</button>
+        </div>
+
+        <form id="calc_form" class="arca-form-grid">
+          <label class="arca-field">
+            <span>Fecha de vencimiento</span>
+            <input type="date" id="fecha_vencimiento" required>
+          </label>
+          <label class="arca-field">
+            <span>Fecha de pago del capital</span>
+            <input type="date" id="fecha_pago_capital" required>
+          </label>
+          <label class="arca-field">
+            <span>Importe del capital</span>
+            <input type="text" id="importe_capital" inputmode="decimal" placeholder="Ej.: 1.250.000,50" required>
+          </label>
+          <label class="arca-field">
+            <span>Fecha de pago de intereses <em>opcional</em></span>
+            <input type="date" id="fecha_pago_intereses">
+          </label>
+          <div class="arca-submit-row">
+            <button class="action primary" id="btn_calcular" type="submit">Calcular intereses</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="calc_result" style="display:none">
+      <div class="arca-summary-grid">
+        <article class="arca-metric"><span>Capital</span><strong id="res_capital">—</strong></article>
+        <article class="arca-metric"><span>Intereses resarcitorios</span><strong id="res_resarcitorios">—</strong></article>
+        <article class="arca-metric"><span>Intereses capitalizados</span><strong id="res_capitalizados">—</strong></article>
+        <article class="arca-metric featured"><span>Total intereses</span><strong id="res_total">—</strong></article>
+        <article class="arca-metric"><span>Días computados</span><strong id="res_dias">—</strong></article>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="arca-section-head">
+            <div>
+              <div class="arca-kicker">Auditoría del cálculo</div>
+              <h2>Detalle por tramos</h2>
+            </div>
+          </div>
+          <div class="table-wrap arca-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Desde</th><th>Hasta</th><th>Tipo</th><th>Importe</th>
+                  <th>Tasa mensual</th><th>Tasa diaria</th><th>Días</th><th>Intereses</th><th>Norma</th>
+                </tr>
+              </thead>
+              <tbody id="detail_body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="arca-panel" id="tab-excel">
+    <div class="card">
+      <div class="card-body">
+        <div class="arca-section-head">
+          <div>
+            <div class="arca-kicker">Procesamiento masivo</div>
+            <h2>1. Elegí e inspeccioná el archivo</h2>
+          </div>
+        </div>
+
+        <div class="arca-upload-row">
+          <label class="arca-file-box" for="excel_file">
+            <strong id="file_title">Seleccionar Excel</strong>
+            <span id="file_subtitle">.xlsx o .xls · máximo configurable</span>
+            <input type="file" id="excel_file" accept=".xlsx,.xls">
+          </label>
+          <button class="action primary" id="btn_inspect" type="button" disabled>Inspeccionar archivo</button>
+        </div>
+
+        <div id="excel_config" style="display:none">
+          <div class="arca-divider"></div>
+          <div class="arca-section-head">
+            <div>
+              <div class="arca-kicker">Mapeo</div>
+              <h2>2. Confirmá hoja y columnas</h2>
+            </div>
+            <span class="arca-chip" id="excel_rows">— filas</span>
+          </div>
+
+          <div class="arca-form-grid excel-grid">
+            <label class="arca-field full">
+              <span>Hoja del Excel</span>
+              <select id="sheet_name"></select>
+            </label>
+            <label class="arca-field">
+              <span>Fecha de vencimiento</span>
+              <select id="col_vencimiento"></select>
+            </label>
+            <label class="arca-field">
+              <span>Fecha de pago del capital</span>
+              <select id="col_pago_capital"></select>
+            </label>
+            <label class="arca-field">
+              <span>Importe del capital</span>
+              <select id="col_importe"></select>
+            </label>
+            <label class="arca-field">
+              <span>Fecha de pago de intereses <em>opcional</em></span>
+              <select id="col_pago_intereses"></select>
+            </label>
+          </div>
+
+          <div class="arca-preview-box">
+            <h3>Vista previa</h3>
+            <div class="table-wrap arca-table-wrap"><table id="preview_table"></table></div>
+          </div>
+
+          <div class="arca-submit-row">
+            <button class="action success" id="btn_process_excel" type="button">Procesar y descargar Excel final</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="arca-panel" id="tab-rates">
+    <div class="card">
+      <div class="card-body">
+        <div class="arca-section-head">
+          <div>
+            <div class="arca-kicker">Fuente de cálculo</div>
+            <h2>Evolución de tasas resarcitorias</h2>
+            <p id="rates_meta" class="arca-muted">—</p>
+          </div>
+          <div class="arca-inline-actions">
+            <button class="action" id="btn_download_rates" type="button">Descargar tasas</button>
+            <button class="action primary" id="btn_refresh_rates" type="button">Consultar ARCA nuevamente</button>
+          </div>
+        </div>
+        <div class="table-wrap arca-table-wrap rates-table-wrap">
+          <table>
+            <thead><tr><th>Desde</th><th>Hasta</th><th>Norma</th><th>Resarcitorio mensual</th><th>Diario</th><th>Fuente</th></tr></thead>
+            <tbody id="rates_body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script src="/static/calculo.js" defer></script>
+</body>
+</html>

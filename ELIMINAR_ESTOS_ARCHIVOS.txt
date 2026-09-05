@@ -1,0 +1,4 @@
+Eliminar del repositorio API_Estadisticas-main:
+
+static/cumpleanos-rrhh.html
+static/cumpleanos-rrhh.js

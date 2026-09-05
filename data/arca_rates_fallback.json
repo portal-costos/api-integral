@@ -1,0 +1,422 @@
+[
+  {
+    "Desde": "01/01/1901",
+    "Hasta": "23/07/1990",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 2.0,
+    "Resarcitorio diario": 0.066667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "24/07/1990",
+    "Hasta": "28/08/1990",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 1.5,
+    "Resarcitorio diario": 0.05,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "29/08/1990",
+    "Hasta": "09/09/1990",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 1.5,
+    "Resarcitorio diario": 0.05,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "10/09/1990",
+    "Hasta": "01/04/1991",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 15.0,
+    "Resarcitorio diario": 0.5,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "02/04/1991",
+    "Hasta": "30/08/1991",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 7.0,
+    "Resarcitorio diario": 0.233333,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "31/08/1991",
+    "Hasta": "30/11/1991",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 4.0,
+    "Resarcitorio diario": 0.133333,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/12/1991",
+    "Hasta": "30/11/1996",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.0,
+    "Resarcitorio diario": 0.1,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/12/1996",
+    "Hasta": "02/04/1998",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 2.0,
+    "Resarcitorio diario": 0.066667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "03/04/1998",
+    "Hasta": "30/09/1998",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 2.0,
+    "Resarcitorio diario": 0.066667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/10/1998",
+    "Hasta": "30/06/2002",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.0,
+    "Resarcitorio diario": 0.1,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/07/2002",
+    "Hasta": "31/01/2003",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 4.0,
+    "Resarcitorio diario": 0.133333,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/02/2003",
+    "Hasta": "31/05/2004",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.0,
+    "Resarcitorio diario": 0.1,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/06/2004",
+    "Hasta": "31/08/2004",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 2.0,
+    "Resarcitorio diario": 0.066667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/09/2004",
+    "Hasta": "30/06/2006",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 1.5,
+    "Resarcitorio diario": 0.05,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/07/2006",
+    "Hasta": "31/12/2010",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 2.0,
+    "Resarcitorio diario": 0.066667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/01/2011",
+    "Hasta": "28/02/2019",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.0,
+    "Resarcitorio diario": 0.1,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/03/2019",
+    "Hasta": "31/03/2019",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 4.5,
+    "Resarcitorio diario": 0.15,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/04/2019",
+    "Hasta": "30/06/2019",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.76,
+    "Resarcitorio diario": 0.125333,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/07/2019",
+    "Hasta": "31/07/2019",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 4.73,
+    "Resarcitorio diario": 0.157667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/08/2019",
+    "Hasta": "30/09/2019",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 4.73,
+    "Resarcitorio diario": 0.157667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/10/2019",
+    "Hasta": "31/12/2019",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 5.34,
+    "Resarcitorio diario": 0.178,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/01/2020",
+    "Hasta": "31/03/2020",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.6,
+    "Resarcitorio diario": 0.12,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/04/2020",
+    "Hasta": "30/06/2020",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 2.5,
+    "Resarcitorio diario": 0.083333,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/07/2020",
+    "Hasta": "30/09/2020",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 2.76,
+    "Resarcitorio diario": 0.092,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/10/2020",
+    "Hasta": "31/12/2020",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.02,
+    "Resarcitorio diario": 0.100667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/01/2021",
+    "Hasta": "31/03/2021",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.35,
+    "Resarcitorio diario": 0.111667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/04/2021",
+    "Hasta": "30/06/2021",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.35,
+    "Resarcitorio diario": 0.111667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/07/2021",
+    "Hasta": "30/09/2021",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.35,
+    "Resarcitorio diario": 0.111667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/10/2021",
+    "Hasta": "31/12/2021",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.35,
+    "Resarcitorio diario": 0.111667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/01/2022",
+    "Hasta": "31/03/2022",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.35,
+    "Resarcitorio diario": 0.111667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/04/2022",
+    "Hasta": "30/06/2022",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 3.72,
+    "Resarcitorio diario": 0.124,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/07/2022",
+    "Hasta": "31/08/2022",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 4.25,
+    "Resarcitorio diario": 0.141667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/09/2022",
+    "Hasta": "31/01/2024",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 5.91,
+    "Resarcitorio diario": 0.197,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/02/2024",
+    "Hasta": "31/03/2024",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 15.27,
+    "Resarcitorio diario": 0.509,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/04/2024",
+    "Hasta": "31/05/2024",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 12.07,
+    "Resarcitorio diario": 0.402333,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/06/2024",
+    "Hasta": "31/07/2024",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 6.41,
+    "Resarcitorio diario": 0.213667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/08/2024",
+    "Hasta": "30/09/2024",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 6.41,
+    "Resarcitorio diario": 0.213667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/10/2024",
+    "Hasta": "30/11/2024",
+    "Norma": "Respaldo histórico heredado de calculo.html",
+    "Resarcitorio mensual": 6.41,
+    "Resarcitorio diario": 0.213667,
+    "Punitorio mensual": null,
+    "Punitorio diario": null,
+    "Fuente": "Respaldo local; verificar con ARCA"
+  },
+  {
+    "Desde": "01/12/2024",
+    "Hasta": "31/01/2025",
+    "Norma": "R (ME) 3/2024",
+    "Resarcitorio mensual": 7.47,
+    "Resarcitorio diario": 0.249,
+    "Punitorio mensual": 8.62,
+    "Punitorio diario": 0.287333,
+    "Fuente": "ARCA evolución de tasas (respaldo local)"
+  },
+  {
+    "Desde": "01/02/2025",
+    "Hasta": "28/02/2025",
+    "Norma": "R (ME) 3/2024",
+    "Resarcitorio mensual": 7.26,
+    "Resarcitorio diario": 0.242,
+    "Punitorio mensual": 8.38,
+    "Punitorio diario": 0.279333,
+    "Fuente": "ARCA evolución de tasas (respaldo local)"
+  },
+  {
+    "Desde": "01/03/2025",
+    "Hasta": "30/06/2025",
+    "Norma": "R (ME) 3/2024",
+    "Resarcitorio mensual": 4.0,
+    "Resarcitorio diario": 0.133333,
+    "Punitorio mensual": 5.0,
+    "Punitorio diario": 0.166667,
+    "Fuente": "ARCA evolución de tasas (respaldo local)"
+  },
+  {
+    "Desde": "01/07/2025",
+    "Hasta": "31/12/2999",
+    "Norma": "R (MEC) 823/2025",
+    "Resarcitorio mensual": 2.75,
+    "Resarcitorio diario": 0.091667,
+    "Punitorio mensual": 3.5,
+    "Punitorio diario": 0.116667,
+    "Fuente": "ARCA evolución de tasas (respaldo local)"
+  }
+]

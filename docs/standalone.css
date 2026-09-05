@@ -1,0 +1,102 @@
+/* Ajustes del portal institucional */
+html { scroll-behavior: smooth; }
+body { min-height: 100vh; }
+a { color: inherit; }
+.menu-screen { min-height: 100vh; }
+.tool-card {
+  text-decoration: none;
+  box-sizing: border-box;
+}
+.tool-card.disabled {
+  cursor: default;
+  opacity: .68;
+  border-style: dashed;
+}
+.tool-card.disabled:hover {
+  transform: none;
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.tool-card.disabled .tool-arrow { color: var(--text-faint); }
+.portal-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 15px 17px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--card) 94%, transparent);
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.portal-notice strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--text);
+}
+.portal-version {
+  margin-left: 8px;
+  color: var(--text-faint);
+  font: 10px var(--font-mono);
+}
+.menu-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 13px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .55px;
+}
+.menu-card-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.menu-card-badge.future {
+  background: var(--bg-subtle);
+  color: var(--text-faint);
+}
+.static-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+.static-status::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 4px var(--success-soft);
+}
+@media (max-width: 920px) {
+  .tool-grid { grid-template-columns: 1fr 1fr; }
+  .tool-card.featured { grid-column: 1 / -1; }
+  .menu-hero { grid-template-columns: 1fr; }
+  .tariff-visual { display: none; }
+}
+@media (max-width: 620px) {
+  .tool-grid { grid-template-columns: 1fr; }
+  .tool-card.featured { grid-column: auto; }
+  .menu-main { width: min(100% - 24px, 1180px); padding-top: 24px; }
+  .menu-topbar { padding: 0 16px; }
+  .menu-brand span,
+  .static-status { display: none; }
+  .menu-hero { padding: 30px 25px; min-height: auto; }
+}
+
+.menu-card-badge.private { background:var(--accent-soft); color:var(--accent-mid); }
+.private-card { border-color:color-mix(in srgb,var(--accent-mid) 20%,var(--border)); }

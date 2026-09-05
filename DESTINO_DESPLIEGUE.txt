@@ -1,0 +1,13 @@
+FRONTEND
+Repositorio: portal-costos/api-integral
+GitHub Pages: https://portal-costos.github.io/api-integral/
+Publicar desde: main /docs
+
+BACKEND
+Render: https://api-estadisticas.onrender.com
+
+CORS EN RENDER
+CORS_ORIGINS=https://portal-costos.github.io
+
+IMPORTANTE
+CORS usa el origin y por eso NO debe llevar /api-integral/.

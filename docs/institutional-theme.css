@@ -1,0 +1,996 @@
+/* =========================================================
+   Identidad institucional ERSeP
+   Paleta basada en los identificadores visuales provistos.
+   ========================================================= */
+:root {
+  --ersep-red: #b51234;
+  --ersep-red-dark: #850921;
+  --ersep-red-soft: #fff1f4;
+  --ersep-water: #079ed0;
+  --ersep-energy: #48a62f;
+  --ersep-transport: #eead08;
+  --ersep-safety: #0c6858;
+  --ersep-road: #75828a;
+  --ersep-antennas: #a88976;
+  --ersep-ink: #25282a;
+  --ersep-paper: #ffffff;
+  --area-color: var(--ersep-red);
+  --area-color-dark: var(--ersep-red-dark);
+  --area-soft: var(--ersep-red-soft);
+}
+
+/* ---------- Cabecera y portada ---------- */
+.menu-screen {
+  background:
+    radial-gradient(circle at 90% 5%, rgba(7,158,208,.08), transparent 24%),
+    linear-gradient(180deg, #f7f8f9 0%, var(--bg) 100%);
+}
+
+.menu-topbar {
+  min-height: 102px;
+  height: auto;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border: 0;
+  background: rgba(255,255,255,.97);
+  box-shadow: 0 4px 20px rgba(31,38,43,.08);
+  backdrop-filter: blur(18px);
+}
+
+.menu-brand {
+  min-width: 0;
+  text-decoration: none;
+}
+.menu-brand-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 205px;
+  padding: 5px 8px;
+  border-radius: 10px;
+  background: #fff;
+  flex: 0 0 auto;
+}
+.menu-brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.menu-brand-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding-left: 4px;
+  border-left: 1px solid #dadde0;
+}
+.menu-brand-copy strong {
+  font-size: 15px;
+  color: #25282a;
+}
+.menu-brand-copy span {
+  color: #697177;
+  font-size: 11px;
+}
+.portal-scope {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background: #f4f5f6;
+  border: 1px solid #e2e4e6;
+  color: #636b70;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .7px;
+  text-transform: uppercase;
+}
+.menu-actions .theme-toggle {
+  background: #f4f5f6;
+  border-color: #dfe2e4;
+  color: #545b60;
+}
+
+.service-color-bar {
+  width: min(1180px, calc(100vw - 40px));
+  height: 11px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  box-shadow: 0 3px 10px rgba(31,38,43,.07);
+}
+.service-color-bar span:nth-child(1) { background: var(--ersep-water); }
+.service-color-bar span:nth-child(2) { background: var(--ersep-energy); }
+.service-color-bar span:nth-child(3) { background: var(--ersep-transport); }
+.service-color-bar span:nth-child(4) { background: var(--ersep-safety); }
+.service-color-bar span:nth-child(5) { background: var(--ersep-road); }
+.service-color-bar span:nth-child(6) { background: var(--ersep-antennas); }
+
+.menu-main {
+  width: min(1180px, calc(100vw - 40px));
+  padding-top: 34px;
+}
+.menu-hero {
+  min-height: 300px;
+  padding: 44px 46px;
+  grid-template-columns: minmax(0,1fr) 320px;
+  color: var(--ersep-ink);
+  border: 1px solid #e2e5e7;
+  border-radius: 18px;
+  background:
+    linear-gradient(100deg, rgba(255,255,255,.98) 0 64%, rgba(245,247,248,.96) 64% 100%);
+  box-shadow: 0 18px 42px rgba(31,38,43,.12);
+}
+.menu-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7px;
+  background: var(--ersep-red);
+  z-index: 1;
+}
+.menu-hero::after {
+  background:
+    linear-gradient(145deg, transparent 0 62%, rgba(7,158,208,.06) 62% 70%, rgba(72,166,47,.06) 70% 78%, rgba(238,173,8,.07) 78% 86%, rgba(181,18,52,.06) 86% 100%);
+}
+.menu-hero > * { position: relative; z-index: 2; }
+.menu-kicker {
+  color: var(--ersep-red);
+  letter-spacing: 1.8px;
+}
+.menu-hero h1 {
+  color: #24282b;
+  font-size: clamp(34px, 4.2vw, 54px);
+  letter-spacing: -2px;
+}
+.menu-hero p {
+  color: #616a70;
+  max-width: 690px;
+  font-size: 15px;
+}
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+.hero-tags span {
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid #dfe3e5;
+  background: #f7f8f9;
+  color: #60686d;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+.hero-brand-panel {
+  min-height: 205px;
+  padding: 26px 24px 21px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  border: 1px solid #dde1e3;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(35,42,47,.08);
+}
+.hero-brand-panel img {
+  width: min(100%, 250px);
+  height: auto;
+  display: block;
+}
+.hero-brand-panel strong {
+  margin-top: 13px;
+  color: #4e565b;
+  font-size: 10px;
+  letter-spacing: 1.6px;
+}
+.hero-brand-lines {
+  width: 100%;
+  height: 7px;
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.hero-brand-lines span:nth-child(1) { background: var(--ersep-water); }
+.hero-brand-lines span:nth-child(2) { background: var(--ersep-energy); }
+.hero-brand-lines span:nth-child(3) { background: var(--ersep-transport); }
+.hero-brand-lines span:nth-child(4) { background: var(--ersep-safety); }
+.hero-brand-lines span:nth-child(5) { background: var(--ersep-road); }
+.hero-brand-lines span:nth-child(6) { background: var(--ersep-antennas); }
+
+/* ---------- Secciones de la portada ---------- */
+.service-directory,
+.tools-section {
+  margin-top: 30px;
+}
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+.section-heading h2 {
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 22px;
+  letter-spacing: -.5px;
+}
+.section-heading p {
+  max-width: 430px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: right;
+}
+.section-kicker {
+  color: var(--ersep-red);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.15px;
+  text-transform: uppercase;
+}
+.service-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0,1fr));
+  gap: 12px;
+}
+.service-logo-card {
+  min-height: 162px;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--service-color);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
+  appearance: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.service-logo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(31,38,43,.12);
+}
+.service-logo-card:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--service-color) 38%, transparent);
+  outline-offset: 3px;
+}
+.service-logo-card[aria-pressed="true"] {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--service-color) 72%, var(--border));
+  border-top-color: var(--service-color);
+  background: color-mix(in srgb, var(--service-color) 8%, var(--card));
+  box-shadow: 0 15px 32px color-mix(in srgb, var(--service-color) 20%, transparent);
+}
+.service-logo-card[aria-pressed="true"]::after {
+  content: "Filtro activo";
+  align-self: end;
+  margin-top: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--service-color);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .45px;
+  text-transform: uppercase;
+}
+.service-logo-card.service-logo-ersep img {
+  width: min(100%, 154px);
+}
+.service-filter-state {
+  min-height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.clear-service-filter {
+  min-height: 32px;
+  padding: 0 13px;
+  border: 1px solid color-mix(in srgb, var(--ersep-red) 35%, var(--border));
+  border-radius: 999px;
+  background: var(--ersep-red-soft);
+  color: var(--ersep-red-dark);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.clear-service-filter:hover {
+  border-color: var(--ersep-red);
+  background: color-mix(in srgb, var(--ersep-red) 13%, #fff);
+}
+.tool-card[hidden],
+.filter-empty-state[hidden],
+.clear-service-filter[hidden] {
+  display: none !important;
+}
+.filter-empty-state {
+  min-height: 150px;
+  margin-top: 14px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--card) 93%, var(--bg));
+  color: var(--text-muted);
+}
+.filter-empty-state strong {
+  color: var(--text);
+  font-size: 16px;
+}
+.filter-empty-state span {
+  max-width: 520px;
+  font-size: 12px;
+}
+
+.service-logo-card img {
+  width: min(100%, 130px);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 8px 10px rgba(31,38,43,.10));
+}
+.service-ersep { --service-color: var(--ersep-red); }
+.service-water { --service-color: var(--ersep-water); }
+.service-energy { --service-color: var(--ersep-energy); }
+.service-transport { --service-color: var(--ersep-transport); }
+.service-safety { --service-color: var(--ersep-safety); }
+.service-road { --service-color: var(--ersep-road); }
+.service-antennas { --service-color: var(--ersep-antennas); }
+
+.tool-grid {
+  margin-top: 0;
+}
+.tool-card {
+  --area-color: var(--ersep-red);
+  --area-color-dark: var(--ersep-red-dark);
+  --area-soft: var(--ersep-red-soft);
+  min-height: 255px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  border-top: 5px solid var(--area-color);
+  background: var(--card);
+  box-shadow: 0 7px 20px rgba(31,38,43,.07);
+}
+.tool-card::after {
+  content: "";
+  position: absolute;
+  width: 115px;
+  height: 115px;
+  top: -52px;
+  right: -45px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--area-color) 9%, transparent);
+  pointer-events: none;
+}
+.tool-card:hover {
+  border-color: color-mix(in srgb, var(--area-color) 55%, var(--border));
+  border-top-color: var(--area-color);
+  box-shadow: 0 18px 38px rgba(31,38,43,.13);
+}
+.tool-card.area-institutional { --area-color: var(--ersep-red); --area-color-dark: var(--ersep-red-dark); --area-soft: var(--ersep-red-soft); }
+.tool-card.area-energy { --area-color: var(--ersep-energy); --area-color-dark: #2e7f20; --area-soft: #eff9ec; }
+.tool-card.area-transport { --area-color: var(--ersep-transport); --area-color-dark: #9c6f00; --area-soft: #fff8df; }
+.tool-card.area-regulation { --area-color: var(--ersep-road); --area-color-dark: #535f66; --area-soft: #f0f3f4; }
+.tool-card.area-water { --area-color: var(--ersep-water); --area-color-dark: #06789e; --area-soft: #eaf8fd; }
+.tool-card .tool-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 15px;
+  padding: 5px;
+  border-radius: 15px;
+  border: 1px solid color-mix(in srgb, var(--area-color) 24%, var(--border));
+  background: var(--area-soft);
+  overflow: hidden;
+}
+.tool-card .tool-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.tool-card .institutional-card-icon {
+  width: 94px;
+  padding: 8px;
+  background: #fff;
+}
+.tool-card .gerencia-card-icon img {
+  transform: scale(1.15);
+}
+.tool-card .tool-meta { color: var(--area-color-dark); }
+.tool-card .tool-arrow { color: var(--area-color-dark); }
+.tool-card .menu-card-badge:not(.private):not(.future) {
+  background: color-mix(in srgb, var(--area-color) 11%, #fff);
+  color: var(--area-color-dark);
+}
+.tool-card.private-card { border-color: color-mix(in srgb, var(--ersep-red) 32%, var(--border)); border-top-color: var(--ersep-red); }
+.menu-card-badge.private { background: var(--ersep-red-soft); color: var(--ersep-red); }
+
+.menu-footer {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+}
+.menu-footer img {
+  width: 115px;
+  height: auto;
+  display: block;
+  padding: 4px 6px;
+  border-radius: 7px;
+  background: #fff;
+}
+
+/* ---------- Cabeceras de páginas internas ---------- */
+.tool-page {
+  --page-area: var(--ersep-red);
+  --page-area-dark: var(--ersep-red-dark);
+  background:
+    radial-gradient(circle at 92% 0, color-mix(in srgb, var(--page-area) 7%, transparent), transparent 22%),
+    var(--bg);
+}
+.tool-page.area-water { --page-area: var(--ersep-water); --page-area-dark: #06789e; }
+.tool-page.area-energy { --page-area: var(--ersep-energy); --page-area-dark: #2e7f20; }
+.tool-page.area-transport { --page-area: var(--ersep-transport); --page-area-dark: #9c6f00; }
+.tool-page.area-safety { --page-area: var(--ersep-safety); --page-area-dark: #084f43; }
+.tool-page.area-road { --page-area: var(--ersep-road); --page-area-dark: #535f66; }
+.tool-page.area-antennas { --page-area: var(--ersep-antennas); --page-area-dark: #795f50; }
+
+.tool-page .header {
+  min-height: 102px;
+  margin-bottom: 28px;
+  padding: 15px 28px 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  overflow: visible;
+  background: #fff;
+  border: 0;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 5px 20px rgba(31,38,43,.10);
+}
+.tool-page .header::before { display: none; }
+.tool-page .header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 7px;
+  background: linear-gradient(90deg,
+    var(--ersep-water) 0 16.66%,
+    var(--ersep-energy) 16.66% 33.32%,
+    var(--ersep-transport) 33.32% 49.98%,
+    var(--ersep-safety) 49.98% 66.64%,
+    var(--ersep-road) 66.64% 83.3%,
+    var(--ersep-antennas) 83.3% 100%);
+  opacity: 1;
+  pointer-events: none;
+}
+.page-brand {
+  width: 178px;
+  min-width: 178px;
+  padding: 4px 7px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9px;
+  background: #fff;
+  text-decoration: none;
+}
+.page-brand img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.tool-page .header-left {
+  padding-left: 16px;
+  border-left: 1px solid #dfe2e4;
+}
+.tool-page .header h1 { color: #24282b; }
+.tool-page .header-badge { color: #697177; }
+.tool-page .header-badge::before {
+  background: var(--page-area);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--page-area) 14%, transparent);
+}
+.tool-page .header-right { margin-left: auto; }
+.tool-page .nav-chip,
+.tool-page .header .theme-toggle,
+.tool-page .logout-button {
+  border-color: #dce0e2;
+  background: #f5f6f7;
+  color: #525a60;
+}
+.tool-page .nav-chip:hover,
+.tool-page .header .theme-toggle:hover,
+.tool-page .logout-button:hover {
+  border-color: color-mix(in srgb, var(--page-area) 45%, #dce0e2);
+  background: #fff;
+  color: var(--page-area-dark);
+}
+.tool-page .nav-chip span { color: var(--page-area-dark); }
+.tool-page #status {
+  color: #626a70;
+  background: #f5f6f7;
+  border-color: #dce0e2;
+}
+
+.tool-page .tool-hero {
+  border-radius: 18px;
+  background: linear-gradient(120deg, var(--page-area-dark) 0%, var(--page-area) 100%);
+  box-shadow: 0 16px 38px color-mix(in srgb, var(--page-area-dark) 24%, transparent);
+}
+.tool-page .tool-kicker { color: rgba(255,255,255,.78); }
+.tool-page .tool-hero p { color: rgba(255,255,255,.83); }
+.tool-page.area-transport .tool-hero {
+  background: linear-gradient(120deg, #7c5900 0%, #d99b00 55%, var(--ersep-transport) 100%);
+}
+.official-hero-logo {
+  width: 112px;
+  height: 112px;
+  padding: 8px;
+  border-radius: 24px;
+  background: rgba(255,255,255,.96);
+  border: 1px solid rgba(255,255,255,.55);
+  overflow: hidden;
+}
+.official-hero-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.official-hero-logo.gerencia img { transform: scale(1.1); }
+.official-hero-logo.institutional { width: 180px; }
+
+/* Cumpleaños: reemplaza el icono decorativo por marca oficial */
+.birthday-hero-icon.official-hero-logo {
+  display: grid;
+  place-items: center;
+  min-width: 180px;
+}
+
+/* Acceso protegido */
+.auth-brand {
+  align-items: center;
+}
+.auth-logo-wrap {
+  width: 150px;
+  padding: 5px 7px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9px;
+  background: #fff;
+  border: 1px solid #e0e3e5;
+  flex: 0 0 auto;
+}
+.auth-logo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.auth-submit {
+  background: var(--ersep-red);
+}
+.auth-submit:hover { background: var(--ersep-red-dark); }
+
+/* ---------- Modo oscuro ---------- */
+[data-theme="dark"] .menu-screen {
+  background:
+    radial-gradient(circle at 90% 5%, rgba(7,158,208,.12), transparent 24%),
+    linear-gradient(180deg, #141516 0%, var(--bg) 100%);
+}
+[data-theme="dark"] .menu-topbar,
+[data-theme="dark"] .tool-page .header {
+  background: #222426;
+}
+[data-theme="dark"] .menu-brand-copy strong,
+[data-theme="dark"] .tool-page .header h1 { color: #f3f4f5; }
+[data-theme="dark"] .menu-brand-copy span,
+[data-theme="dark"] .tool-page .header-badge { color: #bfc4c7; }
+[data-theme="dark"] .menu-brand-copy,
+[data-theme="dark"] .tool-page .header-left { border-color: #464a4d; }
+[data-theme="dark"] .portal-scope,
+[data-theme="dark"] .menu-actions .theme-toggle,
+[data-theme="dark"] .tool-page .nav-chip,
+[data-theme="dark"] .tool-page .header .theme-toggle,
+[data-theme="dark"] .tool-page .logout-button,
+[data-theme="dark"] .tool-page #status {
+  background: #303336;
+  border-color: #484c4f;
+  color: #d5d8da;
+}
+[data-theme="dark"] .menu-hero {
+  color: var(--text);
+  border-color: #3d4144;
+  background: linear-gradient(100deg, #242628 0 64%, #2b2e30 64% 100%);
+}
+[data-theme="dark"] .menu-hero h1 { color: #f5f6f7; }
+[data-theme="dark"] .menu-hero p { color: #c7cbce; }
+[data-theme="dark"] .hero-tags span {
+  border-color: #464b4e;
+  background: #2f3234;
+  color: #d4d7d9;
+}
+[data-theme="dark"] .hero-brand-panel,
+[data-theme="dark"] .menu-brand-logo-wrap,
+[data-theme="dark"] .page-brand,
+[data-theme="dark"] .menu-footer img {
+  background: #fff;
+}
+[data-theme="dark"] .service-logo-card { background: #242729; }
+[data-theme="dark"] .service-logo-card[aria-pressed="true"] { background: color-mix(in srgb, var(--service-color) 16%, #242729); }
+[data-theme="dark"] .tool-card .institutional-card-icon { background: #fff; }
+[data-theme="dark"] .menu-footer { background: #202224; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1040px) {
+  .service-logo-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .menu-hero { grid-template-columns: minmax(0,1fr) 270px; }
+  .tool-page .header { flex-wrap: wrap; }
+  .tool-page .header-right { width: 100%; margin-left: 0; justify-content: flex-end; }
+}
+@media (max-width: 760px) {
+  .menu-topbar { min-height: 88px; padding-inline: 16px; }
+  .menu-brand-logo-wrap { width: 165px; }
+  .menu-brand-copy { display: none; }
+  .portal-scope { display: none; }
+  .service-color-bar { width: 100%; }
+  .menu-main { width: min(100% - 24px, 1180px); }
+  .menu-hero {
+    grid-template-columns: 1fr;
+    padding: 32px 27px;
+  }
+  .hero-brand-panel { min-height: 165px; }
+  .section-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .section-heading p { text-align: left; }
+  .service-logo-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .service-filter-state { justify-content: flex-start; flex-wrap: wrap; }
+  .service-logo-card { min-height: 145px; }
+  .tool-page .header { margin-inline: -12px; padding: 13px 16px 17px; gap: 10px; }
+  .page-brand { width: 145px; min-width: 145px; }
+  .tool-page .header-left { flex: 1 1 190px; padding-left: 10px; }
+  .tool-page .header h1 { font-size: 17px; }
+  .official-hero-logo.institutional,
+  .birthday-hero-icon.official-hero-logo { width: 140px; min-width: 140px; }
+}
+@media (max-width: 480px) {
+  .menu-brand-logo-wrap { width: 145px; padding-inline: 3px; }
+  .menu-hero h1 { font-size: 31px; letter-spacing: -1.2px; }
+  .service-logo-grid { gap: 8px; }
+  .service-logo-card { min-height: 128px; padding: 7px; }
+  .service-logo-card img { width: min(100%, 112px); }
+  .menu-footer { flex-direction: column; gap: 6px; padding-top: 15px; }
+  .tool-page .header-right { justify-content: flex-start; }
+  .page-brand { width: 128px; min-width: 128px; }
+}
+
+/* Módulos anunciados: visibles, pero todavía sin navegación. */
+.tool-card.area-road { --area-color: var(--ersep-road); --area-color-dark: #535f66; --area-soft: #f0f3f4; }
+.tool-card.future-module-card {
+  cursor: default;
+}
+.tool-card.future-module-card:hover {
+  transform: none;
+  border-color: var(--border);
+  border-top-color: var(--area-color);
+  box-shadow: 0 7px 20px rgba(31,38,43,.07);
+}
+
+/* =========================================================
+   Integración API Estadísticas · Costos y Tarifas
+   ========================================================= */
+
+/* Acceso protegido con la misma identidad visual del portal. */
+.login-screen,
+.welcome-screen {
+  color: var(--text);
+  background:
+    radial-gradient(circle at 83% 14%, rgba(7,158,208,.13), transparent 28%),
+    radial-gradient(circle at 10% 92%, rgba(238,173,8,.12), transparent 25%),
+    linear-gradient(145deg, #f4f5f6 0%, #ffffff 48%, #eceeef 100%);
+}
+.login-screen::before,
+.welcome-screen::before {
+  opacity: .44;
+  background-image:
+    linear-gradient(rgba(117,130,138,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(117,130,138,.08) 1px, transparent 1px);
+}
+.portal-orbit {
+  border-color: color-mix(in srgb, var(--ersep-water) 25%, transparent);
+}
+.portal-orbit-two {
+  border-color: color-mix(in srgb, var(--ersep-red) 18%, transparent);
+}
+.login-service-bar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 4;
+  height: 8px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+}
+.login-service-bar span:nth-child(1),
+.welcome-bar.b1 { background: var(--ersep-water); }
+.login-service-bar span:nth-child(2),
+.welcome-bar.b2 { background: var(--ersep-energy); }
+.login-service-bar span:nth-child(3),
+.welcome-bar.b3 { background: var(--ersep-transport); }
+.login-service-bar span:nth-child(4),
+.welcome-bar.b4 { background: var(--ersep-safety); }
+.login-service-bar span:nth-child(5),
+.welcome-bar.b5 { background: var(--ersep-road); }
+.login-service-bar span:nth-child(6),
+.welcome-bar.b6 { background: var(--ersep-antennas); }
+.login-shell {
+  width: min(1060px, calc(100vw - 34px));
+  grid-template-columns: minmax(0,1.08fr) minmax(340px,.78fr);
+}
+.login-brand {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 25px;
+  color: var(--text);
+}
+.login-brand-logo {
+  width: min(360px, 80vw);
+  padding: 13px 18px;
+  border: 1px solid #e0e3e5;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(31,38,43,.10);
+}
+.login-brand-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.login-brand-copy {
+  max-width: 560px;
+}
+.login-eyebrow {
+  color: var(--ersep-red);
+  letter-spacing: 1.7px;
+}
+.login-brand h1 {
+  color: #24282b;
+}
+.login-brand p {
+  color: #616a70;
+}
+.login-card {
+  max-width: 430px;
+  border: 1px solid #dfe3e5;
+  border-top: 6px solid var(--ersep-red);
+  border-radius: 20px;
+  background: rgba(255,255,255,.94);
+  box-shadow: 0 24px 60px rgba(31,38,43,.16);
+}
+.login-lock {
+  color: var(--ersep-red);
+  background: var(--ersep-red-soft);
+  border-color: color-mix(in srgb, var(--ersep-red) 26%, var(--border));
+  font-size: 17px;
+}
+.login-submit {
+  background: var(--ersep-red);
+  border-color: var(--ersep-red);
+}
+.login-submit:hover {
+  background: var(--ersep-red-dark);
+  border-color: var(--ersep-red-dark);
+}
+.welcome-content {
+  color: var(--text);
+}
+.welcome-logo {
+  width: min(300px, 72vw);
+  margin: 0 auto 24px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid #e0e3e5;
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(31,38,43,.10);
+}
+.welcome-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.welcome-emblem {
+  width: min(300px, 72vw);
+  height: 8px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  margin: 0 auto 27px;
+  overflow: hidden;
+  border-radius: 999px;
+}
+.welcome-bar,
+.welcome-bar.b1,
+.welcome-bar.b2,
+.welcome-bar.b3,
+.welcome-bar.b4,
+.welcome-bar.b5,
+.welcome-bar.b6 {
+  width: auto;
+  height: 8px;
+  border-radius: 0;
+  animation: none;
+}
+.welcome-kicker {
+  color: var(--ersep-red);
+}
+.welcome-content h2 {
+  color: #24282b;
+}
+.welcome-content p {
+  color: #616a70;
+}
+.welcome-loader {
+  background: #dfe3e5;
+}
+.welcome-loader span {
+  background: linear-gradient(90deg,
+    var(--ersep-water),
+    var(--ersep-energy),
+    var(--ersep-transport),
+    var(--ersep-red));
+}
+
+/* Menú interno: tarjetas por ámbito y marca oficial. */
+.tool-card.featured {
+  background: linear-gradient(140deg, var(--area-soft), var(--card));
+}
+.tool-card .menu-card-badge {
+  position: relative;
+  z-index: 1;
+}
+.tool-card .tool-arrow {
+  position: relative;
+  z-index: 1;
+}
+
+/* Panel estadístico integrado al área Agua y Saneamiento. */
+#app-screen.stats-screen {
+  background:
+    radial-gradient(circle at 92% 0, rgba(7,158,208,.10), transparent 24rem),
+    linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 94%, #eaf8fd) 100%);
+}
+#app-screen.stats-screen .stats-dashboard-intro {
+  color: #fff;
+  background: linear-gradient(120deg, #066f94 0%, #078fbd 58%, var(--ersep-water) 100%);
+  border-color: color-mix(in srgb, var(--ersep-water) 55%, #fff);
+  box-shadow: 0 16px 38px rgba(6,111,148,.22);
+}
+#app-screen.stats-screen .stats-dashboard-intro::before {
+  border-color: rgba(255,255,255,.11);
+}
+#app-screen.stats-screen .stats-dashboard-intro::after {
+  background: rgba(255,255,255,.07);
+}
+#app-screen.stats-screen .stats-dashboard-eyebrow {
+  color: rgba(255,255,255,.80);
+}
+#app-screen.stats-screen .stats-dashboard-copy p {
+  color: rgba(255,255,255,.84);
+}
+#app-screen.stats-screen .stats-dashboard-pills span {
+  color: #fff;
+  border-color: rgba(255,255,255,.22);
+  background: rgba(255,255,255,.10);
+}
+#app-screen.stats-screen .header {
+  flex-wrap: wrap;
+}
+#app-screen.stats-screen .header-right {
+  flex: 1 1 650px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+#app-screen.stats-screen #status {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Ajustes comunes de módulos que conservan controles específicos. */
+.tool-page .arca-hero {
+  color: #fff;
+}
+.tool-page .arca-hero h2 {
+  color: #fff;
+}
+.tool-page .arca-hero p {
+  color: rgba(255,255,255,.84);
+}
+.tool-page .rate-pill {
+  background: rgba(255,255,255,.96);
+  color: var(--page-area-dark);
+  border: 1px solid rgba(255,255,255,.60);
+}
+.tool-page .rate-pill-label,
+.tool-page .rate-pill > span:last-child {
+  color: #60686d;
+}
+.evolution-hero {
+  margin-bottom: 18px;
+}
+.page-brand:focus-visible {
+  outline-color: color-mix(in srgb, var(--page-area) 42%, transparent);
+}
+
+[data-theme="dark"] .login-screen,
+[data-theme="dark"] .welcome-screen {
+  background:
+    radial-gradient(circle at 83% 14%, rgba(7,158,208,.16), transparent 28%),
+    radial-gradient(circle at 10% 92%, rgba(238,173,8,.10), transparent 25%),
+    linear-gradient(145deg, #161819 0%, #222426 48%, #191b1c 100%);
+}
+[data-theme="dark"] .login-brand h1,
+[data-theme="dark"] .welcome-content h2 {
+  color: #f3f4f5;
+}
+[data-theme="dark"] .login-brand p,
+[data-theme="dark"] .welcome-content p {
+  color: #c7cbce;
+}
+[data-theme="dark"] .login-card {
+  border-color: #44484b;
+  border-top-color: var(--ersep-red);
+  background: rgba(35,37,39,.96);
+}
+
+@media (max-width: 760px) {
+  .menu-brand .menu-brand-logo-wrap {
+    display: inline-flex;
+  }
+  .login-shell {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  .login-brand {
+    align-items: center;
+    text-align: center;
+  }
+  .login-brand-logo {
+    width: min(285px, 78vw);
+  }
+  .login-card {
+    width: 100%;
+    margin-inline: auto;
+  }
+  #app-screen.stats-screen .header-right {
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
+  #app-screen.stats-screen #status {
+    max-width: 100%;
+  }
+}

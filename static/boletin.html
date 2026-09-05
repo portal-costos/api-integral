@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Monitoreo del Boletín Oficial · Portal de Innovación y Análisis de Datos del ERSeP.">
+  <title>Boletín Oficial · Portal de Innovación y Análisis de Datos</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/portal-pages.css">
+  <link rel="stylesheet" href="/static/boletin.css?v=20260805">
+  <link rel="stylesheet" href="/static/institutional-theme.css">
+  <link rel="icon" href="/static/favicon.ico">
+</head>
+<body class="tool-page boletin-page area-institutional">
+<div class="wrap">
+  <header class="header">
+    <a class="page-brand" href="/" aria-label="Volver al menú principal">
+      <img src="/static/assets/img/institucional/logo-ersep.png" alt="ERSeP">
+    </a>
+    <div class="header-left">
+      <h1>Boletín Oficial</h1>
+      <span class="header-badge">Innovación y Análisis de Datos · Costos y Tarifas</span>
+    </div>
+    <div class="header-right">
+      <span id="status">Preparando módulo...</span>
+      <button class="nav-chip tutorial-chip" id="btn_tutorial" type="button"><span>?</span> Tutorial de Uso</button>
+      <button class="nav-chip" id="btn_home"><span>⌂</span> Menú</button>
+      <button class="theme-toggle" id="btn_theme" title="Cambiar tema">🌙</button>
+      <button class="theme-toggle" id="btn_logout" title="Cerrar sesión">⏻</button>
+    </div>
+  </header>
+
+  <section class="tool-hero boletin-hero">
+    <div>
+      <div class="tool-kicker">Vigilancia documental ERSeP</div>
+      <h2>Detectá nuevas resoluciones tarifarias</h2>
+      <p>Recorre el archivo anual del Boletín Oficial, identifica resoluciones ERSeP y permite revisar tanto novedades como documentos ya procesados.</p>
+    </div>
+    <div class="hero-symbol official-hero-logo institutional" aria-hidden="true">
+      <img src="/static/assets/img/institucional/logo-ersep.png" alt="">
+    </div>
+  </section>
+
+  <nav class="boletin-tabs" aria-label="Secciones del módulo">
+    <button class="boletin-tab active" data-tab="monitor">Monitoreo</button>
+    <button class="boletin-tab" data-tab="alerts">Alertas</button>
+    <button class="boletin-tab" data-tab="history">Historial</button>
+  </nav>
+
+  <div id="global_alert" class="tool-alert" style="display:none"></div>
+
+  <section class="boletin-view active" id="view_monitor">
+    <div class="card">
+      <div class="card-body">
+        <div class="monitor-form-grid">
+          <label class="tool-field compact-field">
+            <span>Año a revisar</span>
+            <select id="monitor_year"></select>
+          </label>
+          <label class="tool-field terms-field readonly-field">
+            <span>Términos tarifarios · solo lectura</span>
+            <textarea id="monitor_terms" rows="2" readonly aria-readonly="true">tarifaria O cuadro tarifario O incremento O aumento O cargo tarifario O audiencia pública</textarea>
+          </label>
+          <div class="monitor-options">
+            <label class="check-row process-all-row"><input type="checkbox" id="monitor_process_all"><span><strong>Procesar todos</strong>: revisar todas las resoluciones, incluso PDF ya vistos y sin cambios</span></label>
+            <label class="check-row"><input type="checkbox" id="monitor_all"><span>Incluir todas las resoluciones ERSeP</span></label>
+            <label class="check-row"><input type="checkbox" id="monitor_unchanged"><span>Mostrar también registros sin cambios</span></label>
+          </div>
+        </div>
+        <div class="monitor-actions">
+          <button class="action primary" id="btn_start_monitor" type="button">▶ Iniciar monitoreo de alertas</button>
+          <button class="action danger-action" id="btn_stop_monitor" type="button" disabled>■ Detener</button>
+          <span class="action-separator"></span>
+          <button class="action" id="btn_save_txt" type="button" disabled>Guardar TXT para IA</button>
+          <button class="action" id="btn_copy_txt" type="button" disabled>Copiar TXT completo</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="monitor-progress card">
+      <div class="card-body">
+        <div class="progress-heading">
+          <div>
+            <span class="progress-kicker" id="progress_state">Sin ejecución activa</span>
+            <strong id="progress_message">Configurá el año y presioná Iniciar monitoreo.</strong>
+          </div>
+          <span class="progress-number" id="progress_percent">0%</span>
+        </div>
+        <div class="progress-track" aria-label="Progreso del monitoreo"><span id="progress_bar"></span></div>
+        <div class="kpi-grid">
+          <article class="kpi-card"><span>Meses procesados</span><strong id="kpi_months">0 / 12</strong></article>
+          <article class="kpi-card"><span>PDFs analizados</span><strong id="kpi_pdfs">0</strong></article>
+          <article class="kpi-card"><span>Resoluciones ERSeP</span><strong id="kpi_resolutions">0</strong></article>
+          <article class="kpi-card accent"><span>Novedades</span><strong id="kpi_news">0</strong></article>
+          <article class="kpi-card danger"><span>Errores</span><strong id="kpi_errors">0</strong></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="results-section">
+      <div class="section-heading">
+        <div>
+          <span class="tool-kicker">Resultado de la ejecución</span>
+          <h3>Hallazgos</h3>
+        </div>
+        <div class="results-heading-actions">
+          <span class="result-counter" id="result_counter">0 publicaciones</span>
+          <button class="action compact-action" id="btn_clear_findings" type="button" disabled>Limpiar hallazgos</button>
+        </div>
+      </div>
+      <div id="monitor_results" class="monitor-results">
+        <div class="empty-state">
+          <div class="empty-icon">⌕</div>
+          <strong>Todavía no hay hallazgos</strong>
+          <p>Las resoluciones que coincidan con la configuración aparecerán aquí durante el monitoreo.</p>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <section class="boletin-view" id="view_alerts">
+    <div class="section-heading">
+      <div>
+        <span class="tool-kicker">Prestadoras bajo seguimiento</span>
+        <h3>Alertas de cooperativas</h3>
+      </div>
+      <div class="alert-heading-actions">
+        <button class="action" id="btn_import_alerts" type="button">Importar alertas</button>
+        <button class="action primary plus-action" id="btn_new_alert" type="button"><span aria-hidden="true">+</span> Nueva alerta</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body no-pad-mobile">
+        <div class="table-wrap">
+          <table class="boletin-table">
+            <thead><tr><th>Alias</th><th>Condiciones de búsqueda</th><th>Estado</th><th>Versión</th><th>Actualización</th><th>Acciones</th></tr></thead>
+            <tbody id="alerts_table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="boletin-view" id="view_history">
+    <div class="section-heading history-heading">
+      <div>
+        <span class="tool-kicker">Base persistente SQLite</span>
+        <h3>Historial de publicaciones</h3>
+      </div>
+      <div class="history-export-actions">
+        <button class="action" id="btn_export_json" type="button">Exportar JSON</button>
+        <button class="action primary" id="btn_export_excel" type="button">Exportar Excel</button>
+      </div>
+    </div>
+
+    <div class="card history-filter-card">
+      <div class="card-body">
+        <div class="history-filters">
+          <label class="tool-field wide-filter"><span>Buscar texto</span><input id="history_text" type="search" placeholder="Resolución, prestadora, expediente o contenido..."></label>
+          <label class="tool-field"><span>Año</span><select id="history_year"><option value="">Todos</option></select></label>
+          <label class="tool-field"><span>Estado</span><select id="history_state"><option value="">Todos</option></select></label>
+          <label class="tool-field"><span>Prestadora</span><input id="history_provider" type="text" placeholder="Nombre parcial"></label>
+          <label class="tool-field"><span>Alerta</span><select id="history_alert"><option value="">Todas</option></select></label>
+          <label class="check-row history-check"><input type="checkbox" id="history_news_only"><span>Solo novedades recientes</span></label>
+          <button class="action primary filter-button" id="btn_history_filter" type="button">Aplicar filtros</button>
+          <button class="action filter-button" id="btn_history_clear" type="button">Limpiar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body no-pad-mobile">
+        <div class="table-wrap">
+          <table class="boletin-table history-table">
+            <thead><tr><th>Fecha del Boletín</th><th>Resolución</th><th>Expediente</th><th>Prestadora</th><th>Estado</th><th>Alertas</th><th>Primera detección</th><th>Última verificación</th><th>Verif.</th><th>Cambio</th><th>Acciones</th></tr></thead>
+            <tbody id="history_table"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button class="action" id="history_prev" type="button">← Anterior</button>
+          <span id="history_page_label">Página 1 de 1</span>
+          <button class="action" id="history_next" type="button">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-shell" id="detail_modal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="detail"></div>
+  <section class="modal-card detail-modal-card" role="dialog" aria-modal="true" aria-labelledby="detail_title">
+    <header class="modal-header">
+      <div>
+        <span class="modal-kicker" id="detail_badge">Publicación ERSeP</span>
+        <h3 id="detail_title">Detalle de resolución</h3>
+      </div>
+      <button class="modal-close" data-close="detail" type="button">×</button>
+    </header>
+    <div class="detail-meta" id="detail_meta"></div>
+    <div id="detail_warning" class="tool-alert" style="display:none"></div>
+    <div class="detail-actions">
+      <button class="action primary" id="detail_open_pdf" type="button">Abrir PDF oficial</button>
+      <button class="action" id="detail_download_pdf" type="button">Descargar PDF</button>
+      <button class="action" id="detail_copy_data" type="button">Copiar datos</button>
+      <button class="action" id="detail_copy_full" type="button">Copiar resolución</button>
+      <button class="action" id="detail_copy_resuelve" type="button">Copiar RESUELVE</button>
+      <button class="action" id="detail_extract_full" type="button">Extraer documento completo</button>
+      <button class="action primary" id="detail_get_all" type="button">Obtener información completa</button>
+    </div>
+    <div class="extraction-progress" id="detail_extraction_progress" hidden aria-live="polite">
+      <div><strong id="detail_extraction_label">Extrayendo información…</strong><span id="detail_extraction_percent">0%</span></div>
+      <div class="progress-track"><span id="detail_extraction_bar"></span></div>
+    </div>
+    <div class="document-authority-note">
+      <strong>El documento completo es el texto que cuenta.</strong>
+      <span>La vista previa facilita la revisión inicial; ante cualquier diferencia, prevalece siempre el PDF oficial completo.</span>
+    </div>
+    <div class="detail-grid">
+      <section class="detail-text-card">
+        <div class="detail-text-title">Bloque RESUELVE</div>
+        <pre id="detail_resuelve"></pre>
+      </section>
+      <section class="detail-text-card full-text">
+        <div class="detail-text-title">Resolución completa extraída</div>
+        <pre id="detail_full"></pre>
+      </section>
+    </div>
+    <section class="annex-section">
+      <div class="detail-text-title annex-title-row"><span>Anexos asociados</span><strong id="detail_annex_count">Sin extracción</strong></div>
+      <div id="detail_annexes" class="annex-list">
+        <p class="annex-empty">Usá “Extraer documento completo” para buscar anexos integrados y PDF vinculados.</p>
+      </div>
+    </section>
+  </section>
+</div>
+
+<div class="modal-shell" id="alert_modal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="alert"></div>
+  <section class="modal-card alert-modal-card" role="dialog" aria-modal="true" aria-labelledby="alert_modal_title">
+    <header class="modal-header">
+      <div><span class="modal-kicker">Configuración</span><h3 id="alert_modal_title">Nueva alerta</h3></div>
+      <button class="modal-close" data-close="alert" type="button">×</button>
+    </header>
+    <form id="alert_form">
+      <input type="hidden" id="alert_id">
+      <label class="tool-field"><span>Nombre de la alerta (alias)</span><input id="alert_name" maxlength="180" required placeholder="Ej.: Aguas de Capilla del Monte"></label>
+      <fieldset class="or-builder-field">
+        <legend>Palabras o términos de búsqueda</legend>
+        <p>Cada término es una alternativa: el sistema buscará <strong>término 1 O término 2 O término 3</strong>.</p>
+        <div id="alert_terms_builder" class="or-terms-builder"></div>
+        <button class="mini-button add-term-button" id="btn_add_alert_term" type="button"><span aria-hidden="true">+</span> Añadir término</button>
+      </fieldset>
+      <label class="check-row modal-check"><input type="checkbox" id="alert_active" checked><span>Alerta activa</span></label>
+      <div class="modal-form-actions">
+        <button class="action" data-close="alert" type="button">Cancelar</button>
+        <button class="action primary" type="submit">Guardar alerta</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<div class="modal-shell" id="import_modal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="import"></div>
+  <section class="modal-card import-modal-card" role="dialog" aria-modal="true" aria-labelledby="import_modal_title">
+    <header class="modal-header">
+      <div><span class="modal-kicker">Carga masiva</span><h3 id="import_modal_title">Importar alertas</h3></div>
+      <button class="modal-close" data-close="import" type="button">×</button>
+    </header>
+    <div class="import-intro">
+      <p>La planilla utiliza únicamente <strong>ALIAS</strong> y <strong>PALABRAS CLAVES</strong>. Dentro de PALABRAS CLAVES, separá alternativas con la barra vertical <code>|</code>; en pantalla se mostrarán unidas por <strong>O</strong>.</p>
+      <div class="import-actions">
+        <button class="action" id="btn_download_alert_template" type="button">Descargar plantilla</button>
+        <button class="action primary" id="btn_choose_alert_file" type="button">Seleccionar .xlsx o .csv</button>
+        <input id="alert_import_file" type="file" accept=".xlsx,.csv" hidden>
+      </div>
+      <span id="alert_import_filename" class="selected-file">Ningún archivo seleccionado</span>
+    </div>
+    <div id="import_preview" class="import-preview" hidden>
+      <div class="import-summary" id="import_summary"></div>
+      <div class="table-wrap import-table-wrap">
+        <table class="boletin-table import-table">
+          <thead><tr><th>Fila</th><th>Alias</th><th>Palabras claves</th><th>Resultado previsto</th></tr></thead>
+          <tbody id="import_preview_table"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-form-actions">
+      <button class="action" data-close="import" type="button">Cancelar</button>
+      <button class="action primary" id="btn_confirm_alert_import" type="button" disabled>Confirmar importación</button>
+    </div>
+  </section>
+</div>
+
+<div class="modal-shell" id="tutorial_modal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="tutorial"></div>
+  <section class="modal-card tutorial-modal-card" role="dialog" aria-modal="true" aria-labelledby="tutorial_title">
+    <header class="modal-header">
+      <div>
+        <span class="modal-kicker">Guía paso a paso</span>
+        <h3 id="tutorial_title">Tutorial de Uso</h3>
+      </div>
+      <button class="modal-close" data-close="tutorial" type="button" aria-label="Cerrar tutorial">×</button>
+    </header>
+
+    <div class="tutorial-intro">
+      <strong>La forma más sencilla de usar esta herramienta</strong>
+      <p>Primero configurá las prestadoras que te interesan, después iniciá el monitoreo y finalmente revisá o exportá lo encontrado. No necesitás saber programación.</p>
+    </div>
+
+    <ol class="tutorial-steps">
+      <li>
+        <span class="tutorial-number">1</span>
+        <div><h4>Entrá en “Alertas”</h4><p>Presioná <b>+ Nueva alerta</b>. Escribí el alias y agregá cada forma de búsqueda con <b>+ Añadir término</b>. Las alternativas se muestran unidas por la palabra <b>O</b>.</p><div class="tutorial-example"><b>Ejemplo:</b> Capilla del Monte <b>O</b> Cooperativa Aguas de Capilla <b>O</b> Aguas de Capilla del Monte</div></div>
+      </li>
+      <li>
+        <span class="tutorial-number">2</span>
+        <div><h4>Volvé a “Monitoreo” y elegí el año</h4><p>Elegí el año que querés revisar. Los términos tarifarios se mantienen como campos de solo lectura. Marcá <b>Procesar todos</b> si querés volver a revisar incluso los PDF ya vistos y los registros sin cambios.</p></div>
+      </li>
+      <li>
+        <span class="tutorial-number">3</span>
+        <div><h4>Presioná “Iniciar monitoreo de alertas”</h4><p>La aplicación recorrerá los doce meses, abrirá los boletines y buscará resoluciones ERSeP. Mientras trabaja, dejá abierta la ventana negra de <b>PROBAR_AQUI.bat</b>. La barra mostrará el avance.</p></div>
+      </li>
+      <li>
+        <span class="tutorial-number">4</span>
+        <div><h4>Revisá los hallazgos</h4><p><b>NUEVO</b> significa que nunca se había guardado esa resolución. <b>MODIFICADO</b> significa que ya existía, pero cambió su contenido. La tarjeta muestra solo el comienzo; presioná <b>Ver detalle</b> para consultar el documento. Ante diferencias, siempre prevalece el PDF oficial completo.</p></div>
+      </li>
+      <li>
+        <span class="tutorial-number">5</span>
+        <div><h4>Usá “Limpiar hallazgos” cuando termines</h4><p>Ese botón vacía únicamente las tarjetas visibles de la pantalla. <b>No elimina la base histórica</b>, las alertas ni las resoluciones guardadas.</p></div>
+      </li>
+      <li>
+        <span class="tutorial-number">6</span>
+        <div><h4>Consultá y exportá desde “Historial”</h4><p>El historial conserva las publicaciones detectadas. Podés filtrar por año, estado, prestadora, alerta o texto. <b>Exportar JSON</b> y <b>Exportar Excel</b> descargan exactamente los registros que coinciden con los filtros aplicados.</p></div>
+      </li>
+    </ol>
+
+    <section class="tutorial-options">
+      <h4>¿Qué significan las tres opciones?</h4>
+      <p><b>Procesar todos:</b> vuelve a descargar documentos ya revisados y muestra también los registros sin cambios. No duplica resoluciones ni alertas existentes.</p>
+      <p><b>Incluir todas las resoluciones ERSeP:</b> muestra resoluciones aunque no coincidan con una alerta o término específico.</p>
+      <p><b>Mostrar también registros sin cambios:</b> enseña documentos que ya estaban guardados y no presentan novedades.</p>
+    </section>
+
+    <div class="tutorial-note">
+      <b>Importante:</b> que no aparezcan hallazgos no significa necesariamente que exista un error. Puede significar que durante ese año no hubo publicaciones nuevas relacionadas con las alertas configuradas.
+    </div>
+
+    <div class="modal-form-actions tutorial-close-actions">
+      <button class="action primary" data-close="tutorial" type="button">Entendido, comenzar</button>
+    </div>
+  </section>
+</div>
+
+<script src="/static/boletin.js?v=20260805" defer></script>
+</body>
+</html>

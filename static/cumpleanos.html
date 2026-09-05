@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Agenda interna de Costos y Tarifas · Portal de Innovación y Análisis de Datos del ERSeP.">
+  <title>Cumpleaños CyT · Portal de Innovación y Análisis de Datos</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/portal-pages.css">
+  <link rel="icon" href="/static/favicon.ico">
+  <style>
+    .birthday-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .birthday-hero-copy {
+      max-width: 760px;
+    }
+
+    .birthday-hero-copy p {
+      margin-bottom: 0;
+    }
+
+    .birthday-hero-icon {
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      border-radius: 24px;
+      font-size: 38px;
+      background: color-mix(in srgb, var(--accent, #2563eb) 14%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent, #2563eb) 26%, transparent);
+    }
+
+    .birthday-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin: 18px 0;
+    }
+
+    .birthday-summary-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 152px;
+    }
+
+    .birthday-summary-card::after {
+      content: "";
+      position: absolute;
+      width: 104px;
+      height: 104px;
+      right: -34px;
+      bottom: -42px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--birthday-accent, #2563eb) 13%, transparent);
+    }
+
+    .birthday-summary-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.68;
+    }
+
+    .birthday-summary-value {
+      position: relative;
+      z-index: 1;
+      display: block;
+      margin-bottom: 6px;
+      font-size: clamp(1.45rem, 2vw, 2.15rem);
+      line-height: 1.1;
+    }
+
+    .birthday-summary-detail {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      opacity: 0.74;
+    }
+
+    .birthday-dot {
+      flex: 0 0 auto;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--birthday-color, #16a34a);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--birthday-color, #16a34a) 16%, transparent);
+    }
+
+    .birthday-dot.danger { --birthday-color: #dc2626; }
+    .birthday-dot.warning { --birthday-color: #d97706; }
+    .birthday-dot.safe { --birthday-color: #16a34a; }
+
+    .birthday-countdown-card.danger { --birthday-accent: #dc2626; }
+    .birthday-countdown-card.warning { --birthday-accent: #d97706; }
+    .birthday-countdown-card.safe { --birthday-accent: #16a34a; }
+
+    .birthday-section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .birthday-section-head h3 {
+      margin: 0 0 4px;
+    }
+
+    .birthday-section-head p {
+      margin: 0;
+      opacity: 0.72;
+    }
+
+    .birthday-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px 16px;
+      font-size: 0.82rem;
+    }
+
+    .birthday-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .birthday-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .birthday-person {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 16px;
+      border: 1px solid var(--border, rgba(148, 163, 184, 0.24));
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--card, #ffffff) 94%, transparent);
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .birthday-person:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--birthday-color, #2563eb) 44%, transparent);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .birthday-person.danger { --birthday-color: #dc2626; }
+    .birthday-person.warning { --birthday-color: #d97706; }
+    .birthday-person.safe { --birthday-color: #16a34a; }
+
+    .birthday-avatar {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      font-size: 1.15rem;
+      font-weight: 850;
+      color: var(--birthday-color);
+      background: color-mix(in srgb, var(--birthday-color) 13%, transparent);
+      border: 1px solid color-mix(in srgb, var(--birthday-color) 24%, transparent);
+    }
+
+    .birthday-person-name {
+      display: block;
+      margin-bottom: 3px;
+      line-height: 1.22;
+    }
+
+    .birthday-person-date {
+      display: block;
+      font-size: 0.86rem;
+      opacity: 0.68;
+    }
+
+    .birthday-days {
+      min-width: 88px;
+      text-align: right;
+    }
+
+    .birthday-days strong {
+      display: block;
+      color: var(--birthday-color);
+      font-size: 1rem;
+    }
+
+    .birthday-days span {
+      font-size: 0.76rem;
+      opacity: 0.65;
+    }
+
+    .birthday-person.is-next {
+      border-color: color-mix(in srgb, var(--birthday-color) 56%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--birthday-color) 10%, transparent);
+    }
+
+    .birthday-next-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: var(--birthday-color);
+      background: color-mix(in srgb, var(--birthday-color) 12%, transparent);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 860px) {
+      .birthday-summary-grid,
+      .birthday-list {
+        grid-template-columns: 1fr;
+      }
+
+      .birthday-section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .birthday-legend {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .birthday-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .birthday-hero-icon {
+        display: none;
+      }
+
+      .birthday-person {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .birthday-days {
+        grid-column: 2;
+        min-width: 0;
+        text-align: left;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/static/institutional-theme.css">
+</head>
+<body class="tool-page area-water">
+<div class="wrap">
+  <header class="header">
+    <a class="page-brand" href="/" aria-label="Volver al menú principal">
+      <img src="/static/assets/img/institucional/logo-ersep.png" alt="ERSeP">
+    </a>
+    <div class="header-left">
+      <h1>Cumpleaños CyT</h1>
+      <span class="header-badge">Innovación y Análisis de Datos · Costos y Tarifas</span>
+    </div>
+    <div class="header-right">
+      <span id="status">Preparando agenda...</span>
+      <button class="nav-chip" id="btn_home"><span>⌂</span> Menú</button>
+      <button class="theme-toggle" id="btn_theme" title="Cambiar tema">🌙</button>
+      <button class="theme-toggle" id="btn_logout" title="Cerrar sesión">⏻</button>
+    </div>
+  </header>
+
+  <section class="tool-hero birthday-hero">
+    <div class="birthday-hero-copy">
+      <div class="tool-kicker">Agenda del equipo CyT</div>
+      <h2>Los cumpleaños del equipo de Costos y Tarifas</h2>
+      <p>Consultá quién cumple próximamente dentro de Costos y Tarifas y cuánto falta. El semáforo destaca automáticamente los cumpleaños más cercanos.</p>
+    </div>
+    <div class="birthday-hero-icon official-hero-logo gerencia" aria-hidden="true">
+      <img src="/static/assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
+    </div>
+  </section>
+
+  <section class="birthday-summary-grid" aria-label="Resumen de cumpleaños">
+    <article class="card birthday-summary-card">
+      <div class="card-body">
+        <div class="birthday-summary-label">🎁 Próximo cumpleaños</div>
+        <strong class="birthday-summary-value" id="next_birthday_name">—</strong>
+        <p class="birthday-summary-detail" id="next_birthday_date">Calculando fecha...</p>
+      </div>
+    </article>
+
+    <article class="card birthday-summary-card birthday-countdown-card" id="countdown_card">
+      <div class="card-body">
+        <div class="birthday-summary-label">
+          <span class="birthday-dot safe" id="countdown_dot"></span>
+          Cuenta regresiva
+        </div>
+        <strong class="birthday-summary-value" id="next_birthday_countdown">—</strong>
+        <p class="birthday-summary-detail" id="next_birthday_message">Buscando el cumpleaños más cercano...</p>
+      </div>
+    </article>
+
+    <article class="card birthday-summary-card">
+      <div class="card-body">
+        <div class="birthday-summary-label">📅 Este mes</div>
+        <strong class="birthday-summary-value" id="birthdays_this_month">—</strong>
+        <p class="birthday-summary-detail" id="birthdays_this_month_detail">Cumpleaños registrados</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="card">
+    <div class="card-body">
+      <div class="birthday-section-head">
+        <div>
+          <h3>Próximos cumpleaños</h3>
+          <p>Ordenados desde el más cercano al más lejano.</p>
+        </div>
+        <div class="birthday-legend" aria-label="Referencias del semáforo">
+          <span class="birthday-legend-item"><span class="birthday-dot danger"></span>0 a 7 días</span>
+          <span class="birthday-legend-item"><span class="birthday-dot warning"></span>8 a 30 días</span>
+          <span class="birthday-legend-item"><span class="birthday-dot safe"></span>Más de 30 días</span>
+        </div>
+      </div>
+      <div class="birthday-list" id="birthday_list" aria-live="polite"></div>
+      <p class="page-note" id="birthday_updated_at"></p>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <div class="card-body">
+      <div class="birthday-section-head">
+        <div>
+          <h3>Actualización de valores</h3>
+          <p>La herramienta existente se mantiene disponible dentro del mismo panel.</p>
+        </div>
+      </div>
+      <form id="birthday_form" class="tool-form-grid">
+        <label class="tool-field">
+          <span>Valor base</span>
+          <input id="amount" type="text" inputmode="decimal" value="10000" placeholder="Ej.: 10.000">
+        </label>
+        <label class="tool-field">
+          <span>Mes base</span>
+          <select id="base_month"></select>
+        </label>
+        <label class="tool-field">
+          <span>Mes objetivo</span>
+          <select id="target_month"></select>
+        </label>
+        <div class="tool-actions">
+          <button class="action primary" id="btn_calculate" type="submit">Calcular actualización</button>
+          <button class="action" id="btn_swap" type="button">Intercambiar meses</button>
+        </div>
+      </form>
+      <div id="alert" class="tool-alert" style="display:none"></div>
+    </div>
+  </section>
+
+  <section id="results" style="display:none">
+    <div class="result-grid" id="result_cards"></div>
+    <div class="card">
+      <div class="card-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Medida</th><th>Índice base</th><th>Índice objetivo</th><th>Factor</th><th>Variación acumulada</th><th>Valor actualizado</th></tr></thead>
+            <tbody id="result_table"></tbody>
+          </table>
+        </div>
+        <p class="page-note">El cálculo usa la relación entre el índice objetivo y el índice base. Las series de IPC Córdoba ya están encadenadas en Google Sheets; por ello no se vuelve a dividir ninguna variación por 100.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script src="/static/cumpleanos.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+/* Páginas de herramientas integradas: Cumpleaños e Informes Técnicos */
+.tool-page { min-height: 100vh; background: var(--bg); }
+.tool-page .wrap { max-width: 1240px; }
+.tool-hero {
+  margin-bottom: 22px;
+  padding: 30px 32px;
+  border-radius: 22px;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  background: linear-gradient(125deg, #071936 0%, #0f4c8a 66%, #1671b8 100%);
+  box-shadow: 0 18px 45px rgba(7,25,54,.20);
+  position: relative;
+  overflow: hidden;
+}
+.tool-hero::after { content:""; position:absolute; width:280px; height:280px; border:1px solid rgba(255,255,255,.17); border-radius:50%; right:-95px; top:-110px; }
+.tool-hero > * { position:relative; z-index:1; }
+.tool-kicker { text-transform: uppercase; letter-spacing: 1.7px; color:#7dd3fc; font-size:10px; font-weight:800; }
+.tool-hero h2 { margin:7px 0 8px; font-size:30px; letter-spacing:-.8px; }
+.tool-hero p { margin:0; color:#c6dff4; max-width:760px; }
+.hero-symbol { width:88px; height:88px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.25); border-radius:25px; background:rgba(255,255,255,.08); font-size:36px; font-weight:800; flex-shrink:0; }
+
+.tool-form-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; align-items:end; }
+.tool-field { display:flex; flex-direction:column; gap:7px; }
+.tool-field > span { font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:.65px; }
+.tool-field input, .tool-field select, .tool-field textarea {
+  width:100%; border:1px solid var(--border); background:var(--bg-subtle); color:var(--text); border-radius:10px; padding:10px 12px; font:13px var(--font-main); outline:none; transition:.2s ease;
+}
+.tool-field input, .tool-field select { height:43px; }
+.tool-field textarea { min-height:92px; resize:vertical; line-height:1.5; }
+.tool-field input:focus, .tool-field select:focus, .tool-field textarea:focus { border-color:var(--accent-mid); background:var(--card); box-shadow:0 0 0 3px var(--accent-glow); }
+.tool-actions { display:flex; gap:9px; align-items:center; flex-wrap:wrap; }
+.tool-actions .action { min-height:43px; }
+
+.tool-alert { margin:16px 0; padding:12px 14px; border-radius:10px; border:1px solid var(--border); background:var(--bg-subtle); color:var(--text-muted); font-size:12px; }
+.tool-alert.error { color:var(--danger); background:var(--danger-soft); border-color:color-mix(in srgb,var(--danger) 30%,var(--border)); }
+.tool-alert.success { color:var(--success); background:var(--success-soft); border-color:color-mix(in srgb,var(--success) 30%,var(--border)); }
+
+.result-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin:18px 0; }
+.result-card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:20px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden; animation:fadeUp .35s ease both; }
+.result-card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--accent-mid); }
+.result-card[data-accent="amber"]::before { background:#f59e0b; }
+.result-card[data-accent="teal"]::before { background:#0d9488; }
+.result-card .result-label { color:var(--text-muted); font-size:11px; font-weight:750; min-height:34px; }
+.result-card strong { display:block; margin:10px 0 3px; font-size:25px; letter-spacing:-.7px; color:var(--text); }
+.result-card .result-change { font-size:12px; font-weight:800; color:var(--success); }
+.result-card .result-index { margin-top:13px; font:10px var(--font-mono); color:var(--text-faint); }
+.result-card.unavailable { opacity:.72; }
+.result-card.unavailable strong { font-size:15px; color:var(--text-muted); }
+
+.page-note { color:var(--text-faint); font-size:11px; line-height:1.55; margin-top:14px; }
+
+/* Informe técnico */
+.it-layout { display:grid; grid-template-columns:230px 1fr; gap:18px; align-items:start; }
+.it-sidebar { position:sticky; top:14px; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:12px; box-shadow:var(--shadow-sm); }
+.it-nav-btn { width:100%; border:0; background:transparent; color:var(--text-muted); border-radius:10px; padding:11px 12px; text-align:left; font:700 12px var(--font-main); cursor:pointer; transition:.18s ease; }
+.it-nav-btn:hover { background:var(--bg-subtle); color:var(--text); }
+.it-nav-btn.active { background:var(--accent-soft); color:var(--accent-mid); }
+.it-section { display:none; }
+.it-section.active { display:block; animation:fadeUp .25s ease both; }
+.it-section h3 { margin:0 0 4px; font-size:19px; }
+.it-section > p { margin:0 0 18px; color:var(--text-muted); font-size:12px; }
+.it-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.it-fields .full { grid-column:1 / -1; }
+.it-footer-actions { position:sticky; bottom:0; margin-top:18px; padding:14px; display:flex; justify-content:space-between; align-items:center; gap:12px; background:color-mix(in srgb,var(--card) 94%,transparent); backdrop-filter:blur(14px); border:1px solid var(--border); border-radius:14px; box-shadow:0 -8px 30px rgba(15,23,42,.08); }
+.it-footer-actions small { color:var(--text-faint); }
+
+@media (max-width:900px) {
+  .tool-form-grid, .result-grid { grid-template-columns:1fr; }
+  .it-layout { grid-template-columns:1fr; }
+  .it-sidebar { position:static; display:flex; overflow:auto; gap:6px; }
+  .it-nav-btn { min-width:max-content; }
+}
+@media (max-width:650px) {
+  .tool-hero { padding:24px; }
+  .hero-symbol { display:none; }
+  .it-fields { grid-template-columns:1fr; }
+  .it-fields .full { grid-column:auto; }
+  .it-footer-actions { align-items:stretch; flex-direction:column; }
+  .it-footer-actions .action { width:100%; }
+}
+
+/* Identidad institucional común */
+.tool-hero { background:linear-gradient(120deg,#540000 0%,#930000 60%,#ce0202 100%); box-shadow:0 16px 38px rgba(92,0,0,.20); }
+.tool-kicker { color:#ffd0d0; }
+.tool-hero p { color:#f5dddd; }

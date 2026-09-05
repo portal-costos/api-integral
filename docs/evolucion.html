@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="Evolución de series · Portal de Innovación y Análisis de Datos del ERSeP."/>
+  <title>Evolución de Series · Portal de Innovación y Análisis de Datos</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./portal-pages.css">
+  <link rel="stylesheet" href="./institutional-theme.css">
+  <link rel="icon" href="./favicon.ico">
+</head>
+<body class="tool-page area-water">
+<div class="wrap">
+  <header class="header">
+    <a class="page-brand" href="./index.html" aria-label="Volver al menú principal">
+      <img src="./assets/img/institucional/logo-ersep.png" alt="ERSeP">
+    </a>
+    <div class="header-left">
+      <h1>Evolución de Series</h1>
+      <span class="header-badge">Innovación y Análisis de Datos · Costos y Tarifas</span>
+    </div>
+    <div class="header-right">
+      <span id="status">Listo</span>
+      <button class="nav-chip" id="btn_home" title="Volver al menú"><span>⌂</span> Menú</button>
+      <button class="theme-toggle" id="btn_theme" title="Cambiar modo claro/oscuro">🌙</button>
+      <button class="theme-toggle" id="btn_logout" title="Cerrar sesión">⏻</button>
+    </div>
+  </header>
+
+  <section class="tool-hero evolution-hero">
+    <div>
+      <div class="tool-kicker">Datos económicos y regulatorios</div>
+      <h2>Compará la evolución de las series seleccionadas</h2>
+      <p>Definí la serie principal, agregá comparaciones y analizá valores, variaciones mensuales y períodos en una misma vista.</p>
+    </div>
+    <div class="hero-symbol official-hero-logo gerencia" aria-hidden="true">
+      <img src="./assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
+    </div>
+  </section>
+
+  <div class="card">
+    <div class="card-body">
+
+ <div class="series-container">
+  <label class="field-label">Series</label>
+
+  <div class="picker">
+    <input id="series_search" class="search-box" placeholder="Buscar series… (Enter agrega, Shift+Enter = principal)" autocomplete="off"/>
+
+    <div id="series_results" class="picker-results" style="display:none;"></div>
+
+    <div class="picker-section">
+      <div class="picker-subtitle">Principal</div>
+      <div id="chip_main" class="chip-row"></div>
+    </div>
+
+    <div class="picker-section">
+      <div class="picker-subtitle">Comparadas</div>
+      <div id="chip_cmp" class="chip-row"></div>
+    </div>
+
+    <!-- selects quedan como “estado”, ocultos -->
+    <select id="sel_main" style="display:none;"></select>
+    <select id="sel_cmp"  style="display:none;"></select>
+
+    <!-- OJO: no dupliques btn_graficar, ya hay otro en el side-panel.
+         Si querés que el graficado siga siendo desde el panel lateral,
+         eliminá este bloque de botón. -->
+    <!--
+    <div class="btns-group" style="margin-top:10px">
+      <button class="action success" id="btn_graficar" type="button">Graficar</button>
+    </div>
+    -->
+
+    <div style="margin-top:12px; display:flex; align-items:center; gap:10px;">
+      <input type="checkbox" id="chk_base100" checked>
+      <label for="chk_base100" style="cursor:pointer;">Ver variación mensual (%) en líneas</label>
+    </div>
+  </div>
+</div>
+
+  
+        <div class="side-panel">
+          <div>
+            <label class="field-label">2. Desde</label>
+            <button class="date-btn" id="btn_pick_desde" type="button">
+              <span class="date-btn-label">Seleccionar mes</span>
+              <span class="date-btn-value" id="txt_desde">-</span>
+            </button>
+            <select id="sel_desde" class="date-select" style="display:none;"></select>
+          </div>
+
+          <div>
+            <label class="field-label">3. Hasta</label>
+            <button class="date-btn" id="btn_pick_hasta" type="button">
+              <span class="date-btn-label">Seleccionar mes</span>
+              <span class="date-btn-value" id="txt_hasta">-</span>
+            </button>
+            <select id="sel_hasta" class="date-select" style="display:none;"></select>
+          </div>
+
+          <div class="btns-group">
+            <button class="action success" id="btn_graficar">Graficar evolución</button>
+            <button class="action" id="btn_volver" type="button">Volver a variaciones</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap" id="view_ficha" style="display:none;">
+        <div class="chart-header">
+          <div id="ficha_title"></div>
+          <div class="chart-subtitle">Ficha técnica y métricas del período</div>
+        </div>
+        <div style="padding:12px 18px 18px;" id="ficha_body"></div>
+      </div>
+
+      <div class="chart-wrap" id="view_linea" style="display:none;">
+        <div class="chart-header">
+          <div id="chart_title"></div>
+          <div class="chart-subtitle">Evolución del valor en el período</div>
+        </div>
+        <div id="line_chart" style="padding:12px 18px 18px;"></div>
+      </div>
+
+      <div class="chart-wrap" id="view_mom" style="display:none;">
+        <div class="chart-header">
+          <div id="mom_title"></div>
+          <div class="chart-subtitle">Variación mensual (%)</div>
+        </div>
+        <div id="mom_chart" style="padding:12px 18px 18px;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- reutiliza el mismo modal de monthpicker -->
+<div id="monthModal" class="month-modal" style="display:none;">
+  <div class="month-modal-backdrop" id="monthBackdrop"></div>
+  <div class="month-modal-card" role="dialog" aria-modal="true" aria-labelledby="monthTitle">
+    <div class="month-modal-head">
+      <div class="month-modal-title" id="monthTitle">Seleccionar mes</div>
+      <button class="month-close" id="monthClose" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="month-nav">
+      <button class="month-nav-btn" id="yearPrev" type="button">◀</button>
+      <div class="month-year" id="yearLabel">2026</div>
+      <button class="month-nav-btn" id="yearNext" type="button">▶</button>
+    </div>
+    <div class="month-grid" id="monthGrid"></div>
+    <div class="month-footer">
+      <div class="month-help" id="monthHelp">Elegí un mes</div>
+      <button class="month-ok" id="monthOk" type="button">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="./evolucion.js" defer></script><script src="./config.js"></script>
+</body>
+</html>
