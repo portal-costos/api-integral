@@ -4,7 +4,7 @@
    Este archivo NO contiene secretos. El backend real vive en Render.
 */
 window.ERSEP_CONFIG = Object.freeze({
-  API_BASE_URL: "https://api-estadisticas.onrender.com"
+  API_BASE_URL: "https://api-integral-costos.onrender.com"
 });
 
 window.apiUrl = function apiUrl(path) {
