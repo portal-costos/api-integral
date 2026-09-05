@@ -4343,13 +4343,28 @@ def obtener_variaciones(
             v_inicial = serie.iloc[0] if len(serie) else pd.NA
             v_final = serie.iloc[-1] if len(serie) else pd.NA
             variacion = None
-            if pd.notnull(v_inicial) and pd.notnull(v_final) and float(v_inicial) != 0.0:
+            missing_points = []
+            if pd.isnull(v_inicial):
+                missing_points.append("inicio")
+            if pd.isnull(v_final):
+                missing_points.append("fin")
+
+            reason = None
+            if missing_points:
+                reason = "missing_endpoints"
+            elif float(v_inicial) == 0.0:
+                reason = "initial_zero"
+            else:
                 variacion = ((float(v_final) / float(v_inicial)) - 1.0) * 100.0
+
             resultados.append({
                 "serie": col,
                 "inicial": float(v_inicial) if pd.notnull(v_inicial) else None,
                 "final": float(v_final) if pd.notnull(v_final) else None,
                 "variacion": float(variacion) if variacion is not None else None,
+                "calculable": variacion is not None,
+                "missing_points": missing_points,
+                "reason": reason,
             })
         return {"periodo": f"{desde} a {hasta}", "data": resultados}
     except Exception as e:

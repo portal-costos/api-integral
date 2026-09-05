@@ -85,7 +85,7 @@ async function handleLogin() {
   btn.disabled = true;
   btn.textContent = "Verificando acceso...";
   try {
-    const response = await fetch("/api/login", {
+    const response = await fetch(apiUrl("/api/login"), {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({password: input.value.trim()}),
@@ -114,7 +114,7 @@ const btnCalc = document.getElementById('btn_calc');
 
 if (btnCalc) {
     btnCalc.addEventListener('click', () => {
-        window.location.href = '/static/calculo.html';
+        window.location.href = './calculo.html';
     });
 }
 
@@ -181,7 +181,7 @@ async function api(path, options = {}) {
   const token = getToken();
   let r;
   try {
-    r = await fetch(path, {
+    r = await fetch(apiUrl(path), {
       ...options,
       headers: {
         "Content-Type": "application/json",
@@ -191,8 +191,7 @@ async function api(path, options = {}) {
     });
   } catch (networkError) {
     throw new Error(
-      "No se pudo conectar con el servidor local. Revisá que la ventana de CMD siga abierta " +
-      "y que Uvicorn continúe ejecutándose en http://127.0.0.1:8000."
+      "No se pudo contactar al backend de Costos y Tarifas. Revisá la conexión o el estado del servicio en Render."
     );
   }
   if (r.status === 401) {
@@ -570,6 +569,10 @@ async function init() {
 
     document.getElementById("status").textContent =
       `Base conectada · pestaña ${meta.worksheet || "configurada"}`;
+
+    if (typeof window.initStatsChatbotCatalog === "function") {
+      window.initStatsChatbotCatalog(_ALL_SERIES, _ALL_DATES);
+    }
 
   } catch (e) {
     document.getElementById("status").textContent = "⚠ Error: " + e.message;
@@ -1090,6 +1093,8 @@ async function handleAction(type) {
       document.getElementById("view_tabla").style.display    = "block";
       document.getElementById("view_analisis").style.display = "none";
       document.getElementById("view_grafico").style.display  = "none";
+      const variationNotice = document.getElementById("variation_notice");
+      if (variationNotice) variationNotice.style.display = "none";
 
       const data = await api(`/api/data?${params}`);
 
@@ -1134,16 +1139,47 @@ async function handleAction(type) {
       // Gráfico (si tu función reordena internamente, igual funciona)
       renderVariacionesChart(items, desde, hasta);
 
-      // Render tabla de variaciones
+      // Render tabla de variaciones + explicación cuando falta alguna punta.
+      const noCalculables = items.filter((item) => !(typeof item.variacion === "number" && Number.isFinite(item.variacion)));
+      const notice = document.getElementById("variation_notice");
+      if (notice) {
+        if (noCalculables.length) {
+          const detalle = noCalculables.map((item) => {
+            const faltan = Array.isArray(item.missing_points) ? item.missing_points : [];
+            if (faltan.includes("inicio") && faltan.includes("fin")) return `${item.serie}: faltan ${desdeLbl} y ${hastaLbl}`;
+            if (faltan.includes("inicio")) return `${item.serie}: falta ${desdeLbl}`;
+            if (faltan.includes("fin")) return `${item.serie}: falta ${hastaLbl}`;
+            if (item.reason === "initial_zero") return `${item.serie}: el valor inicial es 0`;
+            return `${item.serie}: no hay dos puntas válidas`;
+          });
+          notice.innerHTML = `<strong>Hay variaciones que no pueden calcularse.</strong><span>${detalle.join(" · ")}</span>`;
+          notice.style.display = "flex";
+        } else {
+          notice.style.display = "none";
+          notice.innerHTML = "";
+        }
+      }
+
       document.querySelector("#tbl_vars tbody").innerHTML = items.map((item) => {
         const hasVar = typeof item.variacion === "number" && Number.isFinite(item.variacion);
-        const varTxt = hasVar ? toEsNumberString(item.variacion, 2) + "%" : "No calculable";
+        const faltan = Array.isArray(item.missing_points) ? item.missing_points : [];
+        let reasonTxt = "";
+        if (!hasVar) {
+          if (faltan.includes("inicio") && faltan.includes("fin")) reasonTxt = `Faltan ${desdeLbl} y ${hastaLbl}`;
+          else if (faltan.includes("inicio")) reasonTxt = `Falta ${desdeLbl}`;
+          else if (faltan.includes("fin")) reasonTxt = `Falta ${hastaLbl}`;
+          else if (item.reason === "initial_zero") reasonTxt = "Valor inicial igual a 0";
+          else reasonTxt = "Sin dos puntas válidas";
+        }
+        const varTxt = hasVar
+          ? toEsNumberString(item.variacion, 2) + "%"
+          : `<span class="missing-point-badge">No calculable</span><small class="missing-point-reason">${reasonTxt}</small>`;
         const varCls = hasVar ? (item.variacion >= 0 ? "up" : "down") : "na";
 
         const iniTxt = typeof item.inicial === "number" && Number.isFinite(item.inicial)
-          ? toEsNumberString(item.inicial, 2) : "-";
+          ? toEsNumberString(item.inicial, 2) : `<span class="endpoint-missing">Sin dato</span>`;
         const finTxt = typeof item.final === "number" && Number.isFinite(item.final)
-          ? toEsNumberString(item.final, 2) : "-";
+          ? toEsNumberString(item.final, 2) : `<span class="endpoint-missing">Sin dato</span>`;
 
         return `
           <tr>
@@ -1169,9 +1205,6 @@ async function handleAction(type) {
     } else {
       alert("Acción desconocida: " + type);
     }
-
-    // La evolución acompaña automáticamente cualquier consulta exitosa.
-    await loadInlineEvolution({ silent: true });
 
   } catch (e) {
     alert("Error al procesar la solicitud: " + e.message);
@@ -1204,38 +1237,22 @@ document.getElementById("btn_desel").onclick = () => {
 
 // Navegación del portal y accesos directos.
 document.getElementById("btn_menu").onclick = showMenu;
-document.getElementById("btn_it").onclick = () => { window.location.href = "/static/generar-it.html"; };
-document.getElementById("btn_incidencia").onclick = () => { window.location.href = "/static/incidencia.html"; };
-document.getElementById("btn_boletin").onclick = () => { window.location.href = "/static/boletin.html"; };
-document.getElementById("btn_cumple").onclick = () => { window.location.href = "/static/cumpleanos.html"; };
+document.getElementById("btn_it").onclick = () => { window.location.href = "./generar-it.html"; };
+document.getElementById("btn_incidencia").onclick = () => { window.location.href = "./incidencia.html"; };
+document.getElementById("btn_boletin").onclick = () => { window.location.href = "./boletin.html"; };
+document.getElementById("btn_cumple").onclick = () => { window.location.href = "./cumpleanos.html"; };
 document.getElementById("btn_cumple_rrhh").onclick = () => { window.location.href = RRHH_PORTAL_URL; };
 
 document.getElementById("menu_stats").onclick = showApp;
-document.getElementById("menu_arca").onclick = () => { window.location.href = "/static/calculo.html"; };
-document.getElementById("menu_evol").onclick = openStatsEvolution;
-document.getElementById("menu_it").onclick = () => { window.location.href = "/static/generar-it.html"; };
-document.getElementById("menu_incidencia").onclick = () => { window.location.href = "/static/incidencia.html"; };
-document.getElementById("menu_boletin").onclick = () => { window.location.href = "/static/boletin.html"; };
-document.getElementById("menu_transporte").onclick = () => { window.location.href = "/static/transporte.html"; };
-document.getElementById("menu_cumple").onclick = () => { window.location.href = "/static/cumpleanos.html"; };
+document.getElementById("menu_arca").onclick = () => { window.location.href = "./calculo.html"; };
+document.getElementById("menu_it").onclick = () => { window.location.href = "./generar-it.html"; };
+document.getElementById("menu_incidencia").onclick = () => { window.location.href = "./incidencia.html"; };
+document.getElementById("menu_boletin").onclick = () => { window.location.href = "./boletin.html"; };
+document.getElementById("menu_transporte").onclick = () => { window.location.href = "./transporte.html"; };
+document.getElementById("menu_cumple").onclick = () => { window.location.href = "./cumpleanos.html"; };
 document.getElementById("menu_cumple_rrhh").onclick = () => { window.location.href = RRHH_PORTAL_URL; };
-document.getElementById("btn_evol").onclick = () => {
-  scrollToEvolution();
-};
 document.getElementById("btn_filtrar").onclick  = () => handleAction("tabla");
 document.getElementById("btn_analizar").onclick = () => handleAction("analisis");
-document.getElementById("btn_refresh_evolution").onclick = () => loadInlineEvolution({ scroll: true });
-document.getElementById("evol_main_series").addEventListener("change", renderInlineEvolutionFromCache);
-document.querySelectorAll("[data-evol-mode]").forEach(button => {
-  button.addEventListener("click", () => {
-    _INLINE_EVOLUTION_MODE = button.dataset.evolMode || "values";
-    localStorage.setItem("cyt-evolution-mode", _INLINE_EVOLUTION_MODE);
-    document.querySelectorAll("[data-evol-mode]").forEach(item => {
-      item.classList.toggle("active", item === button);
-    });
-    renderInlineEvolutionFromCache();
-  });
-});
 const btnActualizarIndices = document.getElementById("btn_actualizar_indices");
 if (btnActualizarIndices) btnActualizarIndices.onclick = handleActualizarIndices;
 const btnDiagnosticarFuentes = document.getElementById("btn_diagnosticar_fuentes");
