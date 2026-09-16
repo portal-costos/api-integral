@@ -843,16 +843,16 @@ def obtener_datos_ipccba_largo(fecha_desde=None) -> pd.DataFrame:
 
 # ICC Córdoba: índice general, rubros y medias móviles interanuales.
 ICC_CBA_TARGET_HEADERS = {
-    "Nivel_General": "ICC Córdoba Nivel General Base 1986 = 100",
-    "Materiales": "ICC Córdoba Materiales Base 1986 = 100",
-    "Mano_de_Obra": "ICC Córdoba Mano de Obra Base 1986 = 100",
-    "Varios": "ICC Córdoba Varios Base 1986 = 100",
+    "Nivel_General": "ICC Córdoba Nivel General Empalme",
+    "Materiales": "ICC Córdoba Materiales Empalme",
+    "Mano_de_Obra": "ICC Córdoba Mano de Obra Empalme",
+    "Varios": "ICC Córdoba Varios Empalme",
 }
 ICC_CBA_MOVING_HEADERS = {
-    "Nivel_General": "ICC Córdoba Nivel General Media Móvil interanual Base 1986 = 100",
-    "Materiales": "ICC Córdoba Materiales Media Móvil interanual Base 1986 = 100",
-    "Mano_de_Obra": "ICC Córdoba Mano de Obra Media Móvil interanual Base 1986 = 100",
-    "Varios": "ICC Córdoba Varios Media Móvil interanual Base 1986 = 100",
+    "Nivel_General": "ICC Córdoba Nivel General Media Móvil interanual Empalme",
+    "Materiales": "ICC Córdoba Materiales Media Móvil interanual Empalme",
+    "Mano_de_Obra": "ICC Córdoba Mano de Obra Media Móvil interanual Empalme",
+    "Varios": "ICC Córdoba Varios Media Móvil interanual Empalme",
 }
 ICC_CBA_MOVING_WINDOW = 13
 
