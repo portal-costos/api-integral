@@ -13,6 +13,9 @@ DEFAULT_REGULATORY_TERMS = [
     "aumento",
     "cargo tarifario",
     "audiencia pública",
+    "canon",
+    "valor gestión del agua",
+    "VGA",
 ]
 
 
@@ -45,10 +48,35 @@ class AlertaEstadoUpdate(BaseModel):
 class MonitoreoRequest(BaseModel):
     anio: int = Field(ge=2000, le=2100)
     terminos: List[str] = Field(default_factory=lambda: list(DEFAULT_REGULATORY_TERMS))
+    organismos: List[Literal["ERSEP", "APRHI"]] = Field(
+        default_factory=lambda: ["ERSEP", "APRHI"], min_length=1
+    )
     revalidar_pdfs: bool = False
     incluir_todas_ersep: bool = False
     mostrar_sin_cambios: bool = False
     procesar_todos: bool = False
+
+    @field_validator("organismos", mode="before")
+    @classmethod
+    def normalize_issuers(cls, value):
+        if value is None:
+            return ["ERSEP", "APRHI"]
+        if isinstance(value, str):
+            value = re.split(r"[,;|\n]+", value)
+        aliases = {
+            "ERSEP": "ERSEP",
+            "ENTEREGULADORDELOSSERVICIOSPUBLICOS": "ERSEP",
+            "ENTEREGULADORDESERVICIOSPUBLICOS": "ERSEP",
+            "APRHI": "APRHI",
+            "ADMINISTRACIONPROVINCIALDERECURSOSHIDRICOS": "APRHI",
+        }
+        result: list[str] = []
+        for item in value:
+            key = re.sub(r"[^A-Z0-9]+", "", str(item or "").upper())
+            canonical = aliases.get(key)
+            if canonical and canonical not in result:
+                result.append(canonical)
+        return result
 
     @field_validator("terminos", mode="before")
     @classmethod
@@ -87,6 +115,7 @@ class AlertaImportacionConfirmar(BaseModel):
 
 class HistorialFilters(BaseModel):
     anio: Optional[int] = None
+    organismo: Optional[str] = None
     prestadora: Optional[str] = None
     estado: Optional[str] = None
     alerta: Optional[str] = None

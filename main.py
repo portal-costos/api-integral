@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import unquote, urljoin, urlparse
 from datetime import date, datetime, timedelta, timezone
+from uuid import uuid4
 
 import jwt
 import pandas as pd
@@ -22,7 +23,7 @@ import requests
 import urllib3
 from bs4 import BeautifulSoup
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,6 +45,23 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # =========================================================
 # Configuración
 # =========================================================
+def _parse_cors_origins(raw_value: str) -> List[str]:
+    """Normaliza origins aunque en Render se haya pegado una ruta completa."""
+    origins: List[str] = []
+    for item in str(raw_value or "").split(","):
+        value = item.strip().rstrip("/")
+        if not value:
+            continue
+        if value == "*":
+            origin = value
+        else:
+            parsed = urlparse(value)
+            origin = f"{parsed.scheme.lower()}://{parsed.netloc.lower()}" if parsed.scheme and parsed.netloc else value
+        if origin not in origins:
+            origins.append(origin)
+    return origins
+
+
 FILE_ID = os.getenv("GSHEET_ID", "1gF9d5ZBT1Rwa5yq9jJxiXgjwXke5jEAlCM-Qd99XDog").strip()
 GSHEET_GID = os.getenv("GSHEET_GID", "883561078").strip()
 GSHEET_PUBLIC_URL = f"https://docs.google.com/spreadsheets/d/{FILE_ID}/edit?gid={GSHEET_GID}#gid={GSHEET_GID}"
@@ -62,7 +80,9 @@ HTTP_TIMEOUT = int(os.getenv("SCRAPER_HTTP_TIMEOUT", "35"))
 UPDATE_MONTHS = max(1, int(os.getenv("UPDATE_MONTHS", "6")))
 UPDATE_INCLUDE_CURRENT_MONTH = os.getenv("UPDATE_INCLUDE_CURRENT_MONTH", "false").strip().lower() in {"1", "true", "yes", "si", "sí"}
 PUBLIC_READ_ONLY = os.getenv("PUBLIC_READ_ONLY", "true").strip().lower() not in {"0", "false", "no"}
-CORS_ORIGINS = [x.strip() for x in os.getenv("CORS_ORIGINS", "https://portal-costos.github.io").split(",") if x.strip()]
+CORS_ORIGINS = _parse_cors_origins(
+    os.getenv("CORS_ORIGINS", "https://portal-costos.github.io")
+)
 BCRA_MONETARIAS_API_BASE = os.getenv(
     "BCRA_MONETARIAS_API_BASE",
     "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias",
@@ -280,7 +300,7 @@ def login(body: dict):
 def home(request: Request):
     if request.method == "HEAD":
         return Response(status_code=200)
-    return FileResponse(BASE_DIR / "static" / "index.html")
+    return RedirectResponse(url="/static/index.html", status_code=307)
 
 
 @app.on_event("startup")
@@ -2814,11 +2834,13 @@ def _get_gspread_client() -> gspread.Client:
 
     if "private_key" in info:
         info["private_key"] = info["private_key"].replace("\\n", "\n")
-    scopes = (
-        ["https://www.googleapis.com/auth/spreadsheets.readonly", "https://www.googleapis.com/auth/drive.readonly"]
-        if PUBLIC_READ_ONLY
-        else ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-    )
+    # PUBLIC_READ_ONLY regula el acceso HTTP anónimo al portal; no debe
+    # degradar la credencial interna a un scope de solo lectura porque la
+    # actualización autenticada necesita escribir en la hoja.
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ]
     creds = Credentials.from_service_account_info(info, scopes=scopes)
     return gspread.authorize(creds)
 
@@ -4150,6 +4172,111 @@ def ejecutar_actualizacion_indices() -> Dict[str, Any]:
     }
 
 
+class IndexUpdateJobManager:
+    """Ejecuta la actualización fuera de la petición HTTP.
+
+    Render puede cerrar una petición larga aunque el proceso todavía tenga
+    trabajo por hacer. El frontend inicia el trabajo, recibe un identificador
+    inmediatamente y consulta su estado mediante una petición corta.
+    """
+
+    TERMINAL_STATES = {"COMPLETED", "ERROR"}
+
+    def __init__(self, runner=None, max_history: int = 10):
+        self.runner = runner or ejecutar_actualizacion_indices
+        self.max_history = max(2, int(max_history))
+        self._lock = threading.RLock()
+        self._jobs: Dict[str, Dict[str, Any]] = {}
+        self._threads: Dict[str, threading.Thread] = {}
+
+    def _snapshot(self, job_id: str) -> Optional[Dict[str, Any]]:
+        job = self._jobs.get(job_id)
+        return dict(job) if job else None
+
+    def _cleanup_locked(self) -> None:
+        completed = [
+            job_id
+            for job_id, job in self._jobs.items()
+            if job.get("status") in self.TERMINAL_STATES
+        ]
+        completed.sort(key=lambda job_id: str(self._jobs[job_id].get("finished_at") or ""))
+        while len(completed) > self.max_history:
+            old_id = completed.pop(0)
+            self._jobs.pop(old_id, None)
+            self._threads.pop(old_id, None)
+
+    def start(self) -> Tuple[Dict[str, Any], bool]:
+        with self._lock:
+            self._cleanup_locked()
+            for job_id, thread in self._threads.items():
+                if thread.is_alive():
+                    current = self._snapshot(job_id)
+                    if current:
+                        return current, False
+
+            job_id = uuid4().hex
+            created_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+            self._jobs[job_id] = {
+                "job_id": job_id,
+                "status": "PENDING",
+                "message": "Actualización en cola.",
+                "created_at": created_at,
+                "started_at": None,
+                "finished_at": None,
+                "result": None,
+                "error": None,
+            }
+            thread = threading.Thread(
+                target=self._worker,
+                args=(job_id,),
+                daemon=True,
+                name=f"indices-update-{job_id[:8]}",
+            )
+            self._threads[job_id] = thread
+            thread.start()
+            return self._snapshot(job_id) or {}, True
+
+    def get(self, job_id: str) -> Optional[Dict[str, Any]]:
+        with self._lock:
+            return self._snapshot(str(job_id))
+
+    def _worker(self, job_id: str) -> None:
+        with self._lock:
+            job = self._jobs.get(job_id)
+            if not job:
+                return
+            job.update(
+                status="RUNNING",
+                message="Consultando fuentes oficiales y preparando Google Sheets.",
+                started_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            )
+        try:
+            result = self.runner()
+            with self._lock:
+                job = self._jobs.get(job_id)
+                if job:
+                    job.update(
+                        status="COMPLETED",
+                        message=str(result.get("message") or "Actualización finalizada."),
+                        result=result,
+                        finished_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                    )
+        except Exception as exc:
+            traceback.print_exc()
+            with self._lock:
+                job = self._jobs.get(job_id)
+                if job:
+                    job.update(
+                        status="ERROR",
+                        message="La actualización no pudo completarse.",
+                        error=str(exc),
+                        finished_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                    )
+
+
+INDEX_UPDATE_JOBS = IndexUpdateJobManager()
+
+
 # =========================================================
 # API Endpoints
 # =========================================================
@@ -4222,21 +4349,21 @@ def reload_base(auth: bool = Depends(require_auth)):
     return {"ok": True}
 
 
-@app.post("/api/actualizar-indices")
-async def actualizar_indices(auth: bool = Depends(require_auth)):
-    if PUBLIC_READ_ONLY:
-        raise HTTPException(status_code=403, detail="Actualización deshabilitada en el módulo público de estadísticas (solo lectura).")
-    # Se procesa en un hilo para no bloquear el event loop. Los errores vuelven como JSON legible.
-    try:
-        return await run_in_threadpool(ejecutar_actualizacion_indices)
-    except HTTPException:
-        raise
-    except Exception as exc:
-        traceback.print_exc()
-        raise HTTPException(
-            status_code=502,
-            detail=f"Falló la actualización automática: {exc}",
-        ) from exc
+@app.post("/api/actualizar-indices", status_code=202)
+def actualizar_indices(auth: bool = Depends(require_auth)):
+    # PUBLIC_READ_ONLY habilita únicamente las consultas estadísticas sin
+    # sesión. Una persona autenticada conserva permiso para iniciar esta
+    # operación de escritura.
+    job, created = INDEX_UPDATE_JOBS.start()
+    return {**job, "created": created}
+
+
+@app.get("/api/actualizar-indices/{job_id}")
+def estado_actualizacion_indices(job_id: str, auth: bool = Depends(require_auth)):
+    job = INDEX_UPDATE_JOBS.get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Actualización no encontrada o expirada.")
+    return job
 
 
 @app.get("/api/diagnostico-fuentes")
@@ -4510,4 +4637,3 @@ def api_health():
         "informes_tecnicos": True,
         "incidencia_tarifaria": True,
     }
-

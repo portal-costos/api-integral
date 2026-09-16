@@ -36,15 +36,39 @@ BOLETIN_USER_AGENT = (
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
 MIN_TEXT_CHARS = 600
+BOLETIN_PARSER_VERSION = 2
+
+ISSUER_NAMES = {
+    "ERSEP": "Ente Regulador de los Servicios Públicos (ERSeP)",
+    "APRHI": "Administración Provincial de Recursos Hídricos (APRHI)",
+}
 
 PAT_RESOLUTION = re.compile(
-    r"Resoluci[oó]n\s+General\s+N[°º\.]\s*(\d+)"
+    r"Resoluci[oó]n(?:\s+General)?\s+N(?:[°º\.]|ro\.?|[úu]mero)?\s*(\d+)"
+    r"(?:\s*[/–-]\s*(\d{2,4}))?"
     r"(?:\s*[-–]\s*Letra\s*:?\s*[A-Z])?",
     re.IGNORECASE,
 )
 PAT_ERSEP_SECTION = re.compile(
     r"ENTE\s+REGULADOR\s+DE\s+(?:LOS\s+)?SERVICIOS\s+P[ÚU]BLICOS"
     r"(?:\s*[-–\n]\s*ERSEP)?",
+    re.IGNORECASE,
+)
+PAT_APRHI_SECTION = re.compile(
+    r"ADMINISTRACI[ÓO]N\s+PROVINCIAL\s+DE\s+RECURSOS\s+H[ÍI]DRICOS"
+    r"(?:\s*[-–(\n]\s*APRHI\)?)?",
+    re.IGNORECASE,
+)
+PAT_ERSEP_AUTHORITY = re.compile(
+    r"(?:HONORABLE\s+)?DIRECTORIO\s+DEL\s+ENTE\s+REGULADOR"
+    r"(?:\s+DE\s+(?:LOS\s+)?SERVICIOS\s+P[ÚU]BLICOS)?"
+    r"[\s\S]{0,260}?\bRESUELVE\b",
+    re.IGNORECASE,
+)
+PAT_APRHI_AUTHORITY = re.compile(
+    r"DIRECTORIO\s+DE\s+LA\s+ADMINISTRACI[ÓO]N\s+PROVINCIAL"
+    r"\s+DE\s+RECURSOS\s+H[ÍI]DRICOS(?:\s*\(APRHI\))?"
+    r"[\s\S]{0,180}?\bRESUELVE\b",
     re.IGNORECASE,
 )
 PAT_RESUELVE = re.compile(
@@ -57,7 +81,7 @@ PAT_RESUELVE = re.compile(
 PAT_RESOLUTION_END = re.compile(
     r"(?:^|\n)\s*(?:fdo\.|fdo:|firmado|f\.d\.o\.|"
     r"anexo\s+(?:[ivxlc]+|\d+)|"
-    r"resoluci[oó]n\s+general\s+n[°º\.]\s*\d)",
+    r"resoluci[oó]n(?:\s+general)?\s+n(?:[°º\.]|ro\.?)?\s*\d)",
     re.IGNORECASE,
 )
 PAT_EXPEDIENT_LABEL = re.compile(
@@ -153,6 +177,51 @@ def contains_ersep(text: str) -> bool:
             "ersep",
         )
     )
+
+
+def contains_aprhi(text: str) -> bool:
+    normalized = normalize_text(text)
+    return any(
+        pattern in normalized
+        for pattern in (
+            "administracion provincial de recursos hidricos",
+            "aprhi",
+        )
+    )
+
+
+def contains_monitored_issuer(text: str) -> bool:
+    return contains_ersep(text) or contains_aprhi(text)
+
+
+def detect_issuer_code(text: str, leading_context: str = "") -> str:
+    """Identifica quién dicta la resolución y evita confundir una mera cita.
+
+    Las resoluciones del ERSeP pueden mencionar a APRHI al tratar cánones de
+    agua. Por eso se prioriza la fórmula de autoridad inmediatamente anterior
+    a «RESUELVE» y recién después se usan los encabezados del Boletín.
+    """
+    source = compact_pdf_text(text)
+    authority_matches: list[tuple[int, str]] = []
+    authority_matches.extend((match.start(), "ERSEP") for match in PAT_ERSEP_AUTHORITY.finditer(source))
+    authority_matches.extend((match.start(), "APRHI") for match in PAT_APRHI_AUTHORITY.finditer(source))
+    if authority_matches:
+        return max(authority_matches, key=lambda item: item[0])[1]
+
+    header = compact_pdf_text(f"{leading_context[-700:]}\n{source[:700]}")
+    section_matches: list[tuple[int, str]] = []
+    section_matches.extend((match.start(), "ERSEP") for match in PAT_ERSEP_SECTION.finditer(header))
+    section_matches.extend((match.start(), "APRHI") for match in PAT_APRHI_SECTION.finditer(header))
+    if section_matches:
+        return max(section_matches, key=lambda item: item[0])[1]
+
+    has_ersep = contains_ersep(source)
+    has_aprhi = contains_aprhi(source)
+    if has_ersep and not has_aprhi:
+        return "ERSEP"
+    if has_aprhi and not has_ersep:
+        return "APRHI"
+    return ""
 
 
 def is_body_resolution_match(full_text: str, match: re.Match) -> bool:
@@ -254,10 +323,15 @@ def extract_emission_date(text: str) -> str:
         return ""
 
 
-def extract_issuing_body(text: str, ersep_context: bool = False) -> str:
-    if ersep_context or contains_ersep(text):
-        return "Ente Regulador de los Servicios Públicos (ERSeP)"
-    return ""
+def extract_issuing_body(
+    text: str, ersep_context: bool = False, issuer_code: str = ""
+) -> str:
+    code = str(issuer_code or "").strip().upper()
+    if ersep_context and not code:
+        code = "ERSEP"
+    if not code:
+        code = detect_issuer_code(text)
+    return ISSUER_NAMES.get(code, "")
 
 
 def extract_initial_preview(text: str, max_chars: int = 760) -> str:
@@ -310,19 +384,26 @@ def detect_embedded_annexes(text: str, source_url: str = "") -> list[dict[str, A
     return annexes
 
 
-def split_resolutions(full_text: str) -> list[dict[str, Any]]:
-    section_start = find_ersep_section_start(full_text)
-    if section_start < 0:
-        return []
+def split_resolutions(
+    full_text: str, organismos: list[str] | tuple[str, ...] | set[str] | None = None
+) -> list[dict[str, Any]]:
+    selected = {
+        str(code or "").strip().upper()
+        for code in (organismos or ISSUER_NAMES.keys())
+        if str(code or "").strip().upper() in ISSUER_NAMES
+    }
     body_matches = [
         match for match in PAT_RESOLUTION.finditer(full_text)
-        if is_body_resolution_match(full_text, match) and match.start() >= section_start
+        if is_body_resolution_match(full_text, match)
     ]
     output: list[dict[str, Any]] = []
     for index, match in enumerate(body_matches):
         start = match.start()
         end = body_matches[index + 1].start() if index + 1 < len(body_matches) else len(full_text)
         block = full_text[start:end].strip()
+        issuer_code = detect_issuer_code(block, full_text[max(0, start - 700):start])
+        if issuer_code not in selected:
+            continue
         output.append(
             {
                 "numero": re.sub(r"\s+", " ", match.group(0)).strip(),
@@ -331,7 +412,8 @@ def split_resolutions(full_text: str) -> list[dict[str, Any]]:
                 "texto_resuelve": extract_resuelve(block),
                 "expediente": extract_expediente(block),
                 "fecha_emision": extract_emission_date(block),
-                "organismo_emisor": extract_issuing_body(block, ersep_context=True),
+                "organismo_codigo": issuer_code,
+                "organismo_emisor": extract_issuing_body(block, issuer_code=issuer_code),
             }
         )
     return output
@@ -379,7 +461,7 @@ def match_alerts(text: str, alerts: list[dict[str, Any]]) -> list[dict[str, Any]
     return output
 
 
-def detect_state(text: str) -> str:
+def detect_state(text: str, issuer_code: str = "ERSEP") -> str:
     normalized = normalize_text(text)
     if re.search(r"\b(rectific(?:ar|ase)|modific(?:ar|ase)|sustituy(?:ese|ase)|corregir)\b", normalized):
         return "RECTIFICACIÓN / MODIFICACIÓN"
@@ -393,7 +475,7 @@ def detect_state(text: str) -> str:
         return "APROBADO / AUTORIZADO"
     if re.search(r"\b(prorrog(?:ar|ase))\b", normalized):
         return "PRÓRROGA"
-    return "PUBLICACIÓN ERSeP"
+    return f"PUBLICACIÓN {str(issuer_code or 'ERSEP').upper()}"
 
 
 def extract_excerpt(text: str, terms: list[str], max_chars: int = 520) -> str:
@@ -414,14 +496,19 @@ def extract_excerpt(text: str, terms: list[str], max_chars: int = 520) -> str:
     return excerpt
 
 
-def stable_key_for(year: int, resolution_number: str) -> str:
-    return sha256_text(f"ERSEP|{int(year)}|{normalize_text(resolution_number)}")
+def stable_key_for(year: int, resolution_number: str, issuing_body: str = "ERSEP") -> str:
+    issuer_code = detect_issuer_code(str(issuing_body or ""))
+    if not issuer_code:
+        compact = re.sub(r"[^A-Z0-9]+", "", str(issuing_body or "").upper())
+        issuer_code = "APRHI" if "APRHI" in compact else "ERSEP"
+    return sha256_text(f"{issuer_code}|{int(year)}|{normalize_text(resolution_number)}")
 
 
 def content_hash_for(finding: dict[str, Any]) -> str:
     content = "\n".join(
         [
             finding.get("numero", ""),
+            finding.get("organismo_emisor", ""),
             finding.get("prestadora", ""),
             finding.get("texto_completo", ""),
             finding.get("texto_resuelve", ""),
@@ -434,7 +521,7 @@ def content_hash_for(finding: dict[str, Any]) -> str:
 def llm_text(findings: list[dict[str, Any]], year: int) -> str:
     news = [item for item in findings if item.get("novedad") in {"NUEVO", "MODIFICADO"}]
     lines = [
-        "MONITOREO DE RESOLUCIONES TARIFARIAS — ERSeP / BOLETÍN OFICIAL DE CÓRDOBA",
+        "MONITOREO DE RESOLUCIONES — ERSeP Y APRHI / BOLETÍN OFICIAL DE CÓRDOBA",
         f"AÑO ANALIZADO: {year}",
         f"FECHA DE GENERACIÓN: {now_label()}",
         f"NOVEDADES DETECTADAS: {len(news)}",
@@ -455,6 +542,7 @@ def llm_text(findings: list[dict[str, Any]], year: int) -> str:
                 f"COOPERATIVA / ALERTA: {item.get('cooperativa', '')}",
                 f"PRESTADORA EXTRAÍDA: {item.get('prestadora', '')}",
                 f"NORMA: {item.get('numero', '')}",
+                f"ORGANISMO EMISOR: {item.get('organismo_emisor', '')}",
                 f"ESTADO HEURÍSTICO: {item.get('estado_detectado', '')}",
                 f"FECHA DEL BOLETÍN: {item.get('fecha', '')}",
                 f"EXPEDIENTE: {item.get('expediente') or 'Expediente no identificado'}",
@@ -546,6 +634,11 @@ class BoletinJobManager:
         status = "COMPLETED"
         session = self._create_session()
         active_alerts = self.repository.list_alerts(active_only=True)
+        selected_issuers = {
+            str(code or "").strip().upper()
+            for code in (config.get("organismos") or ISSUER_NAMES.keys())
+            if str(code or "").strip().upper() in ISSUER_NAMES
+        }
         self.repository.update_run(run_id, status="RUNNING", stats=stats, message="Iniciando monitoreo anual.")
 
         try:
@@ -597,8 +690,15 @@ class BoletinJobManager:
                         self._progress(run_id, stats, month, percentage, error_message)
                         continue
 
-                    stats["resolutions_seen"] += len(resolutions)
-                    for resolution in resolutions:
+                    selected_resolutions = [
+                        resolution
+                        for resolution in resolutions
+                        if str(resolution.get("organismo_codigo") or "").upper()
+                        in selected_issuers
+                    ]
+                    stats["resolutions_seen"] += len(selected_resolutions)
+                    for resolution in selected_resolutions:
+                        issuer_code = str(resolution.get("organismo_codigo") or "").upper()
                         text = resolution.get("texto_completo", "")
                         alerts_match = match_alerts(text, active_alerts)
                         term_matches = extract_keywords(text, list(config.get("terminos") or []))
@@ -627,20 +727,23 @@ class BoletinJobManager:
                             "numero": resolution.get("numero", ""),
                             "expediente": resolution.get("expediente") or extract_expediente(text),
                             "fecha_emision": resolution.get("fecha_emision") or extract_emission_date(text),
-                            "organismo_emisor": resolution.get("organismo_emisor") or extract_issuing_body(text, True),
+                            "organismo_codigo": issuer_code,
+                            "organismo_emisor": resolution.get("organismo_emisor") or extract_issuing_body(text, issuer_code=issuer_code),
                             "prestadora": resolution.get("prestadora", ""),
                             "cooperativa": ", ".join(alert_names) or resolution.get("prestadora", ""),
                             "alertas": alert_names,
                             "alertas_detalle": alerts_match,
                             "terminos_encontrados": term_matches,
-                            "estado_detectado": detect_state(state_source),
+                            "estado_detectado": detect_state(state_source, issuer_code),
                             "extracto": extract_initial_preview(text),
                             "texto_completo": text,
                             "texto_resuelve": resolution.get("texto_resuelve", ""),
                             "desde_cache": cached,
                             "warning": warning,
                         }
-                        stable_key = stable_key_for(finding["year"], finding["numero"])
+                        stable_key = stable_key_for(
+                            finding["year"], finding["numero"], finding["organismo_emisor"]
+                        )
                         content_hash = content_hash_for(finding)
                         finding = self.repository.register_publication(
                             run_id, finding, stable_key, content_hash
@@ -760,7 +863,10 @@ class BoletinJobManager:
     def _analyze_pdf(self, session: requests.Session, pdf: dict[str, Any],
                      revalidate: bool = False) -> tuple[list[dict[str, Any]], bool, str]:
         cache = self.repository.get_pdf_cache(pdf["url"])
-        if cache and not revalidate:
+        cache_is_current = bool(
+            cache and int(cache.get("parser_version") or 1) >= BOLETIN_PARSER_VERSION
+        )
+        if cache_is_current and not revalidate:
             return cache.get("resolutions", []), True, cache.get("warning", "")
 
         validate_official_url(pdf["url"])
@@ -781,9 +887,13 @@ class BoletinJobManager:
             raise ValueError("La respuesta no parece ser un PDF válido.")
 
         pdf_hash = hashlib.sha256(content).hexdigest()
-        if cache and cache.get("pdf_hash") == pdf_hash:
+        if cache_is_current and cache.get("pdf_hash") == pdf_hash:
             self.repository.save_pdf_cache(
-                pdf, pdf_hash, cache.get("resolutions", []), cache.get("warning", "")
+                pdf,
+                pdf_hash,
+                cache.get("resolutions", []),
+                cache.get("warning", ""),
+                parser_version=BOLETIN_PARSER_VERSION,
             )
             return cache.get("resolutions", []), True, cache.get("warning", "")
 
@@ -794,8 +904,14 @@ class BoletinJobManager:
         warning = ""
         if len(normalize_text(full_text)) < MIN_TEXT_CHARS:
             warning = "PDF posiblemente escaneado o con capa textual insuficiente; revisar manualmente."
-        resolutions = split_resolutions(full_text) if contains_ersep(full_text) else []
-        self.repository.save_pdf_cache(pdf, pdf_hash, resolutions, warning)
+        resolutions = split_resolutions(full_text) if contains_monitored_issuer(full_text) else []
+        self.repository.save_pdf_cache(
+            pdf,
+            pdf_hash,
+            resolutions,
+            warning,
+            parser_version=BOLETIN_PARSER_VERSION,
+        )
         return resolutions, False, warning
 
     @staticmethod
@@ -810,8 +926,17 @@ class BoletinJobManager:
 
     @staticmethod
     def _select_resolution(
-        resolutions: list[dict[str, Any]], resolution_number: str
+        resolutions: list[dict[str, Any]], resolution_number: str, issuing_body: str = ""
     ) -> dict[str, Any] | None:
+        issuer_code = detect_issuer_code(issuing_body)
+        if issuer_code:
+            same_issuer = [
+                item
+                for item in resolutions
+                if str(item.get("organismo_codigo") or "").upper() == issuer_code
+            ]
+            if same_issuer:
+                resolutions = same_issuer
         target = normalize_text(resolution_number)
         for item in resolutions:
             if normalize_text(item.get("numero")) == target:
@@ -923,9 +1048,15 @@ class BoletinJobManager:
             full_document_text = self._extract_pdf_text(
                 self._download_pdf_bytes(session, source_url, page_url)
             )
-            resolutions = split_resolutions(full_document_text) if contains_ersep(full_document_text) else []
+            resolutions = (
+                split_resolutions(full_document_text)
+                if contains_monitored_issuer(full_document_text)
+                else []
+            )
             selected = self._select_resolution(
-                resolutions, str(publication.get("resolution_number") or "")
+                resolutions,
+                str(publication.get("resolution_number") or ""),
+                str(publication.get("issuing_body") or ""),
             )
             if selected:
                 resolution_text = str(selected.get("texto_completo") or "")

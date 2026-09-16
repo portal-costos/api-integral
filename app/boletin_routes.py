@@ -380,6 +380,7 @@ def create_boletin_router(
     @router.get("/historial")
     def history(
         anio: Optional[int] = Query(default=None, ge=2000, le=2100),
+        organismo: str = Query(default="", pattern="^(|ERSEP|APRHI)$"),
         prestadora: str = "",
         estado: str = "",
         alerta: str = "",
@@ -390,6 +391,7 @@ def create_boletin_router(
     ):
         return repository.history(
             anio=anio,
+            organismo=organismo,
             prestadora=prestadora,
             estado=estado,
             alerta=alerta,
@@ -461,6 +463,7 @@ def create_boletin_router(
         scope: str = Query(default="historial", pattern="^(historial|run)$"),
         run_id: Optional[int] = None,
         anio: Optional[int] = Query(default=None, ge=2000, le=2100),
+        organismo: str = Query(default="", pattern="^(|ERSEP|APRHI)$"),
         prestadora: str = "",
         estado: str = "",
         alerta: str = "",
@@ -479,6 +482,7 @@ def create_boletin_router(
         else:
             records = repository.history_all(
                 anio=anio,
+                organismo=organismo,
                 prestadora=prestadora,
                 estado=estado,
                 alerta=alerta,

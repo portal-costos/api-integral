@@ -7,7 +7,7 @@
   <title>Boletín Oficial · Portal de Innovación y Análisis de Datos</title>
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./portal-pages.css">
-  <link rel="stylesheet" href="./boletin.css?v=20260805">
+  <link rel="stylesheet" href="./boletin.css?v=20260916-aprhi-v1">
   <link rel="stylesheet" href="./institutional-theme.css">
   <link rel="icon" href="./favicon.ico">
 </head>
@@ -32,9 +32,9 @@
 
   <section class="tool-hero boletin-hero">
     <div>
-      <div class="tool-kicker">Vigilancia documental ERSeP</div>
+      <div class="tool-kicker">Vigilancia documental ERSeP · APRHI</div>
       <h2>Detectá nuevas resoluciones tarifarias</h2>
-      <p>Recorre el archivo anual del Boletín Oficial, identifica resoluciones ERSeP y permite revisar tanto novedades como documentos ya procesados.</p>
+      <p>Recorre el archivo anual del Boletín Oficial, identifica resoluciones del ERSeP y de la Administración Provincial de Recursos Hídricos (APRHI), y permite revisar tanto novedades como documentos ya procesados.</p>
     </div>
     <div class="hero-symbol official-hero-logo institutional" aria-hidden="true">
       <img src="./assets/img/institucional/logo-ersep.png" alt="">
@@ -57,13 +57,18 @@
             <span>Año a revisar</span>
             <select id="monitor_year"></select>
           </label>
+          <fieldset class="monitor-issuers">
+            <legend>Organismos a monitorear</legend>
+            <label class="check-row"><input type="checkbox" id="monitor_issuer_ersep" value="ERSEP" checked><span>ERSeP</span></label>
+            <label class="check-row"><input type="checkbox" id="monitor_issuer_aprhi" value="APRHI" checked><span>APRHI</span></label>
+          </fieldset>
           <label class="tool-field terms-field readonly-field">
             <span>Términos tarifarios · solo lectura</span>
-            <textarea id="monitor_terms" rows="2" readonly aria-readonly="true">tarifaria O cuadro tarifario O incremento O aumento O cargo tarifario O audiencia pública</textarea>
+            <textarea id="monitor_terms" rows="2" readonly aria-readonly="true">tarifaria O cuadro tarifario O incremento O aumento O cargo tarifario O audiencia pública O canon O valor gestión del agua O VGA</textarea>
           </label>
           <div class="monitor-options">
             <label class="check-row process-all-row"><input type="checkbox" id="monitor_process_all"><span><strong>Procesar todos</strong>: revisar todas las resoluciones, incluso PDF ya vistos y sin cambios</span></label>
-            <label class="check-row"><input type="checkbox" id="monitor_all"><span>Incluir todas las resoluciones ERSeP</span></label>
+            <label class="check-row"><input type="checkbox" id="monitor_all"><span>Incluir todas las resoluciones de los organismos seleccionados</span></label>
             <label class="check-row"><input type="checkbox" id="monitor_unchanged"><span>Mostrar también registros sin cambios</span></label>
           </div>
         </div>
@@ -90,7 +95,7 @@
         <div class="kpi-grid">
           <article class="kpi-card"><span>Meses procesados</span><strong id="kpi_months">0 / 12</strong></article>
           <article class="kpi-card"><span>PDFs analizados</span><strong id="kpi_pdfs">0</strong></article>
-          <article class="kpi-card"><span>Resoluciones ERSeP</span><strong id="kpi_resolutions">0</strong></article>
+          <article class="kpi-card"><span>Resoluciones ERSeP / APRHI</span><strong id="kpi_resolutions">0</strong></article>
           <article class="kpi-card accent"><span>Novedades</span><strong id="kpi_news">0</strong></article>
           <article class="kpi-card danger"><span>Errores</span><strong id="kpi_errors">0</strong></article>
         </div>
@@ -158,6 +163,7 @@
         <div class="history-filters">
           <label class="tool-field wide-filter"><span>Buscar texto</span><input id="history_text" type="search" placeholder="Resolución, prestadora, expediente o contenido..."></label>
           <label class="tool-field"><span>Año</span><select id="history_year"><option value="">Todos</option></select></label>
+          <label class="tool-field"><span>Organismo</span><select id="history_issuer"><option value="">Todos</option><option value="ERSEP">ERSeP</option><option value="APRHI">APRHI</option></select></label>
           <label class="tool-field"><span>Estado</span><select id="history_state"><option value="">Todos</option></select></label>
           <label class="tool-field"><span>Prestadora</span><input id="history_provider" type="text" placeholder="Nombre parcial"></label>
           <label class="tool-field"><span>Alerta</span><select id="history_alert"><option value="">Todas</option></select></label>
@@ -172,7 +178,7 @@
       <div class="card-body no-pad-mobile">
         <div class="table-wrap">
           <table class="boletin-table history-table">
-            <thead><tr><th>Fecha del Boletín</th><th>Resolución</th><th>Expediente</th><th>Prestadora</th><th>Estado</th><th>Alertas</th><th>Primera detección</th><th>Última verificación</th><th>Verif.</th><th>Cambio</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Fecha del Boletín</th><th>Organismo</th><th>Resolución</th><th>Expediente</th><th>Prestadora</th><th>Estado</th><th>Alertas</th><th>Primera detección</th><th>Última verificación</th><th>Verif.</th><th>Cambio</th><th>Acciones</th></tr></thead>
             <tbody id="history_table"></tbody>
           </table>
         </div>
@@ -191,7 +197,7 @@
   <section class="modal-card detail-modal-card" role="dialog" aria-modal="true" aria-labelledby="detail_title">
     <header class="modal-header">
       <div>
-        <span class="modal-kicker" id="detail_badge">Publicación ERSeP</span>
+        <span class="modal-kicker" id="detail_badge">Publicación oficial</span>
         <h3 id="detail_title">Detalle de resolución</h3>
       </div>
       <button class="modal-close" data-close="detail" type="button">×</button>
@@ -318,7 +324,7 @@
       </li>
       <li>
         <span class="tutorial-number">3</span>
-        <div><h4>Presioná “Iniciar monitoreo de alertas”</h4><p>La aplicación recorrerá los doce meses, abrirá los boletines y buscará resoluciones ERSeP. Mientras trabaja, dejá abierta la ventana negra de <b>PROBAR_AQUI.bat</b>. La barra mostrará el avance.</p></div>
+        <div><h4>Elegí los organismos e iniciá el monitoreo</h4><p>La aplicación recorrerá los doce meses, abrirá los boletines y buscará resoluciones del ERSeP y/o APRHI según la selección. La barra mostrará el avance.</p></div>
       </li>
       <li>
         <span class="tutorial-number">4</span>
@@ -337,7 +343,7 @@
     <section class="tutorial-options">
       <h4>¿Qué significan las tres opciones?</h4>
       <p><b>Procesar todos:</b> vuelve a descargar documentos ya revisados y muestra también los registros sin cambios. No duplica resoluciones ni alertas existentes.</p>
-      <p><b>Incluir todas las resoluciones ERSeP:</b> muestra resoluciones aunque no coincidan con una alerta o término específico.</p>
+      <p><b>Incluir todas las resoluciones:</b> muestra las publicaciones de los organismos seleccionados aunque no coincidan con una alerta o término específico.</p>
       <p><b>Mostrar también registros sin cambios:</b> enseña documentos que ya estaban guardados y no presentan novedades.</p>
     </section>
 
@@ -351,7 +357,7 @@
   </section>
 </div>
 
-<script src="./boletin.js?v=20260805" defer></script>
+<script src="./boletin.js?v=20260916-aprhi-v1" defer></script>
 <script src="./config.js"></script>
 </body>
 </html>

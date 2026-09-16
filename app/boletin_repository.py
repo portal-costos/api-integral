@@ -182,6 +182,7 @@ class BoletinRepositorio:
                     filename TEXT,
                     publication_date TEXT,
                     pdf_hash TEXT,
+                    parser_version INTEGER NOT NULL DEFAULT 1,
                     resolutions_json TEXT NOT NULL,
                     warning TEXT NOT NULL DEFAULT '',
                     last_checked_at TEXT NOT NULL
@@ -264,7 +265,10 @@ class BoletinRepositorio:
                 "last_change_type": "TEXT NOT NULL DEFAULT 'NUEVO'",
                 "is_modified": "INTEGER NOT NULL DEFAULT 0",
             },
-            "pdf_cache": {"warning": "TEXT NOT NULL DEFAULT ''"},
+            "pdf_cache": {
+                "warning": "TEXT NOT NULL DEFAULT ''",
+                "parser_version": "INTEGER NOT NULL DEFAULT 1",
+            },
             "alerts": {"current_version": "INTEGER NOT NULL DEFAULT 1"},
         }
         for table, columns in expected.items():
@@ -492,23 +496,31 @@ class BoletinRepositorio:
             return None
         return data
 
-    def save_pdf_cache(self, pdf: dict[str, Any], pdf_hash: str, resolutions: list[dict[str, Any]], warning: str = "") -> None:
+    def save_pdf_cache(
+        self,
+        pdf: dict[str, Any],
+        pdf_hash: str,
+        resolutions: list[dict[str, Any]],
+        warning: str = "",
+        parser_version: int = 1,
+    ) -> None:
         with self.connect() as con:
             con.execute(
                 """
                 INSERT INTO pdf_cache(url, year, month, filename, publication_date, pdf_hash,
-                                      resolutions_json, warning, last_checked_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                      parser_version, resolutions_json, warning, last_checked_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(url) DO UPDATE SET
                     year=excluded.year, month=excluded.month, filename=excluded.filename,
                     publication_date=excluded.publication_date, pdf_hash=excluded.pdf_hash,
+                    parser_version=excluded.parser_version,
                     resolutions_json=excluded.resolutions_json, warning=excluded.warning,
                     last_checked_at=excluded.last_checked_at
                 """,
                 (
                     pdf["url"], pdf.get("year"), pdf.get("month"), pdf.get("archivo"),
-                    pdf.get("fecha"), pdf_hash, json.dumps(resolutions, ensure_ascii=False),
-                    warning, now_iso(),
+                    pdf.get("fecha"), pdf_hash, int(parser_version),
+                    json.dumps(resolutions, ensure_ascii=False), warning, now_iso(),
                 ),
             )
 
@@ -594,6 +606,7 @@ class BoletinRepositorio:
                 snapshot = {
                     "stable_key": stable_key,
                     "numero": finding.get("numero"),
+                    "organismo_emisor": finding.get("organismo_emisor"),
                     "prestadora": finding.get("prestadora"),
                     "fecha": finding.get("fecha"),
                     "archivo": finding.get("archivo"),
@@ -737,7 +750,7 @@ class BoletinRepositorio:
             data.pop("text_resuelve", None)
         return data
 
-    def history(self, *, anio: Optional[int] = None, prestadora: str = "", estado: str = "",
+    def history(self, *, anio: Optional[int] = None, organismo: str = "", prestadora: str = "", estado: str = "",
                 alerta: str = "", texto: str = "", solo_novedades: bool = False,
                 page: int = 1, page_size: int = 25) -> dict[str, Any]:
         clauses: list[str] = []
@@ -745,6 +758,12 @@ class BoletinRepositorio:
         if anio:
             clauses.append("year=?")
             params.append(int(anio))
+        if organismo:
+            code = re.sub(r"[^A-Z0-9]+", "", organismo.upper())
+            if code not in {"ERSEP", "APRHI"}:
+                raise ValueError("Organismo inválido. Use ERSEP o APRHI.")
+            clauses.append("UPPER(issuing_body) LIKE ?")
+            params.append(f"%{code}%")
         if prestadora:
             clauses.append("provider LIKE ?")
             params.append(f"%{prestadora.strip()}%")
@@ -757,10 +776,10 @@ class BoletinRepositorio:
         if texto:
             clauses.append(
                 "(resolution_number LIKE ? OR expediente_number LIKE ? OR provider LIKE ? "
-                "OR text_full LIKE ? OR text_resuelve LIKE ?)"
+                "OR issuing_body LIKE ? OR text_full LIKE ? OR text_resuelve LIKE ?)"
             )
             term = f"%{texto.strip()}%"
-            params.extend([term, term, term, term, term])
+            params.extend([term, term, term, term, term, term])
         if solo_novedades:
             clauses.append("last_change_type IN ('NUEVO','MODIFICADO')")
         where = " WHERE " + " AND ".join(clauses) if clauses else ""
@@ -812,4 +831,7 @@ class BoletinRepositorio:
             providers = [row[0] for row in con.execute(
                 "SELECT DISTINCT provider FROM publications WHERE provider<>'' ORDER BY provider COLLATE NOCASE LIMIT 500"
             )]
-        return {"years": years, "states": states, "providers": providers}
+            issuers = [row[0] for row in con.execute(
+                "SELECT DISTINCT issuing_body FROM publications WHERE issuing_body<>'' ORDER BY issuing_body COLLATE NOCASE"
+            )]
+        return {"years": years, "states": states, "providers": providers, "issuers": issuers}

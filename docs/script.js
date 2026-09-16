@@ -273,7 +273,12 @@ async function handleActualizarIndices() {
   setUpdateStatus("Actualizando índices. El proceso puede demorar porque consulta INDEC, BCRA, IPC Córdoba y luego escribe en Google Sheets.", "info");
 
   try {
-    const result = await api("/api/actualizar-indices", { method: "POST" });
+    const started = await api("/api/actualizar-indices", { method: "POST" });
+    if (!started?.job_id) throw new Error("El servidor no devolvió el identificador de la actualización.");
+    if (started.created === false) {
+      setUpdateStatus("Ya había una actualización en ejecución. Se retomó el seguimiento de su progreso.", "info");
+    }
+    const result = await waitForIndexUpdate(started.job_id);
     renderUpdateReport(result);
 
     if (result.status === "ok") {
@@ -294,6 +299,35 @@ async function handleActualizarIndices() {
   } finally {
     setActualizarIndicesLoading(false);
   }
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function waitForIndexUpdate(jobId) {
+  const deadline = Date.now() + 30 * 60 * 1000;
+  let consecutiveNetworkErrors = 0;
+  while (Date.now() < deadline) {
+    try {
+      const job = await api(`/api/actualizar-indices/${encodeURIComponent(jobId)}`);
+      consecutiveNetworkErrors = 0;
+      if (job.status === "COMPLETED") return job.result || {};
+      if (job.status === "ERROR") {
+        const terminalError = new Error(job.error || job.message || "La actualización no pudo completarse.");
+        terminalError.terminalUpdate = true;
+        throw terminalError;
+      }
+      setUpdateStatus(job.message || "Actualización en ejecución...", "info");
+    } catch (error) {
+      if (error?.terminalUpdate || !isLoggedIn() || /actualización no encontrada|expirada|sesión expirada/i.test(error?.message || "")) throw error;
+      consecutiveNetworkErrors += 1;
+      if (consecutiveNetworkErrors >= 5) throw error;
+      setUpdateStatus("El servidor demoró en responder. La actualización sigue en curso y se reintentará automáticamente.", "warn");
+    }
+    await delay(1800);
+  }
+  throw new Error("La actualización superó los 30 minutos. Volvé a presionar el botón para retomar el seguimiento.");
 }
 
 // ════════════════════════════════

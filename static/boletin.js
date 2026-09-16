@@ -52,6 +52,16 @@ function hideAlert(){ document.getElementById("global_alert").style.display = "n
 
 function expedienteLabel(value){ return String(value || "").trim() || "Expediente no identificado"; }
 function identifiedLabel(value){ return String(value || "").trim() || "No identificado"; }
+function issuerCode(value){
+  const normalized = String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+  if (normalized.includes("APRHI") || normalized.includes("ADMINISTRACION PROVINCIAL DE RECURSOS HIDRICOS")) return "APRHI";
+  if (normalized.includes("ERSEP") || normalized.includes("ENTE REGULADOR")) return "ERSEP";
+  return "";
+}
+function issuerLabel(item){
+  const code = String(item?.organismo_codigo || "").toUpperCase() || issuerCode(item?.organismo_emisor || item?.issuing_body);
+  return code === "APRHI" ? "APRHI" : code === "ERSEP" ? "ERSeP" : "No identificado";
+}
 function splitSearchTerms(value){
   return String(value || "").split(/\s*(?:\||;|\n)\s*/).map(item => item.trim()).filter(Boolean);
 }
@@ -156,9 +166,14 @@ function monitorPayload(){
     .map(value => value.trim())
     .filter(Boolean);
   const processAll = document.getElementById("monitor_process_all").checked;
+  const organismos = [
+    document.getElementById("monitor_issuer_ersep").checked ? "ERSEP" : "",
+    document.getElementById("monitor_issuer_aprhi").checked ? "APRHI" : "",
+  ].filter(Boolean);
   return {
     anio: Number(document.getElementById("monitor_year").value),
     terminos: terms,
+    organismos,
     revalidar_pdfs: processAll,
     incluir_todas_ersep: document.getElementById("monitor_all").checked,
     mostrar_sin_cambios: processAll || document.getElementById("monitor_unchanged").checked,
@@ -168,13 +183,18 @@ function monitorPayload(){
 
 async function startMonitoring(){
   hideAlert();
+  const payload = monitorPayload();
+  if (!payload.organismos.length){
+    showAlert("Seleccioná al menos un organismo: ERSeP o APRHI.", "error");
+    return;
+  }
   const button = document.getElementById("btn_start_monitor");
   button.disabled = true;
   button.textContent = "Iniciando...";
   try {
     const response = await api("/api/boletin/monitorear", {
       method:"POST",
-      body:JSON.stringify(monitorPayload()),
+      body:JSON.stringify(payload),
     });
     currentRunId = response.run_id;
     monitorItems = [];
@@ -285,6 +305,7 @@ function renderMonitorResults(){
         <span class="result-date">Fecha del Boletín: ${escapeHtml(item.fecha || "No identificada")}</span>
         <div class="result-badges">
           <span class="badge ${changeClass(item.novedad)}">${escapeHtml(item.novedad)}</span>
+          <span class="badge state">${escapeHtml(issuerLabel(item))}</span>
           <span class="badge state">${escapeHtml(item.estado_detectado)}</span>
         </div>
       </div>
@@ -346,7 +367,7 @@ async function openDetail(publicationId){
 function renderSelectedPublication(){
   if (!selectedPublication) return;
   document.getElementById("detail_title").textContent = selectedPublication.resolution_number || "Resolución no identificada";
-  document.getElementById("detail_badge").textContent = selectedPublication.last_change_type || "Publicación ERSeP";
+  document.getElementById("detail_badge").textContent = `${issuerLabel(selectedPublication)} · ${selectedPublication.last_change_type || "Publicación oficial"}`;
   const alertNames = (selectedPublication.matched_alerts || []).map(item => typeof item === "string" ? item : item.nombre).filter(Boolean);
   document.getElementById("detail_meta").innerHTML = [
     ["Resolución", identifiedLabel(selectedPublication.resolution_number)],
@@ -413,6 +434,7 @@ function publicationCopyText(publication){
     `Expediente: ${expedienteLabel(publication.expediente_number || publication.expediente)}`,
     `Resolución: ${identifiedLabel(publication.resolution_number || publication.numero)}`,
     `Fecha del Boletín: ${identifiedLabel(publication.publication_date || publication.fecha)}`,
+    `Organismo: ${identifiedLabel(publication.issuing_body || publication.organismo_emisor)}`,
     `Enlace: ${identifiedLabel(publication.source_url || publication.url)}`,
     `Prestadora: ${identifiedLabel(publication.provider || publication.prestadora)}`,
   ].join("\n");
@@ -652,6 +674,7 @@ function historyParams(page=historyPage){
   const mapping = {
     texto: document.getElementById("history_text").value.trim(),
     anio: document.getElementById("history_year").value,
+    organismo: document.getElementById("history_issuer").value,
     estado: document.getElementById("history_state").value,
     prestadora: document.getElementById("history_provider").value.trim(),
     alerta: document.getElementById("history_alert").value,
@@ -694,12 +717,13 @@ function populateHistoryOptions(items){
 function renderHistory(items, total){
   const body = document.getElementById("history_table");
   if (!items.length){
-    body.innerHTML = `<tr><td colspan="11">No hay publicaciones que coincidan con los filtros.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="12">No hay publicaciones que coincidan con los filtros.</td></tr>`;
   } else {
     body.innerHTML = items.map(item => {
       const alertNames = (item.matched_alerts || []).map(entry => typeof entry === "string" ? entry : entry.nombre).filter(Boolean);
       return `<tr>
         <td>${escapeHtml(item.publication_date || "—")}</td>
+        <td><span class="badge state">${escapeHtml(issuerLabel(item))}</span></td>
         <td><strong>${escapeHtml(item.resolution_number)}</strong></td>
         <td>${escapeHtml(expedienteLabel(item.expediente_number))}</td>
         <td>${escapeHtml(item.provider || "—")}</td>
@@ -719,7 +743,7 @@ function renderHistory(items, total){
 }
 function clearHistoryFilters(){
   ["history_text","history_provider"].forEach(id => document.getElementById(id).value = "");
-  ["history_year","history_state","history_alert"].forEach(id => document.getElementById(id).value = "");
+  ["history_year","history_issuer","history_state","history_alert"].forEach(id => document.getElementById(id).value = "");
   document.getElementById("history_news_only").checked = false;
   loadHistory(1).catch(error => showAlert(error.message, "error"));
 }
