@@ -31,8 +31,8 @@
   <section class="tool-hero">
     <div>
       <div class="tool-kicker">Documentación regulatoria</div>
-      <h2>Prepará un IT con estructura institucional</h2>
-      <p>Completá los datos esenciales, incorporá el análisis técnico y descargá un Word editable con formato de Costos y Tarifas.</p>
+      <h2>Prepará un IT con la lógica de los modelos reales</h2>
+      <p>Elegí el perfil de la prestadora, completá el análisis y pegá directamente gráficos, imágenes o rangos de Excel para incorporarlos al Word.</p>
     </div>
     <div class="hero-symbol official-hero-logo gerencia" aria-hidden="true">
       <img src="./assets/img/institucional/gerencia-agua-saneamiento.png" alt="">
@@ -41,7 +41,25 @@
 
   <section class="card" style="margin-bottom:18px">
     <div class="card-body">
-      <div class="tool-form-grid">
+      <div class="tool-form-grid it-config-grid">
+        <label class="tool-field">
+          <span>Perfil / modelo</span>
+          <select id="report_profile">
+            <option value="minorista_agua">Minorista · solo agua</option>
+            <option value="minorista_cloaca">Minorista · solo saneamiento</option>
+            <option value="minorista_agua_cloaca">Minorista · agua y saneamiento</option>
+            <option value="mayorista_agua">Mayorista · solo agua</option>
+            <option value="mayorista_cloaca">Mayorista · solo saneamiento</option>
+            <option value="mayorista_agua_cloaca">Mayorista · agua y saneamiento</option>
+          </select>
+        </label>
+        <label class="tool-field">
+          <span>Modalidad</span>
+          <select id="report_mode">
+            <option value="revision">Revisión tarifaria</option>
+            <option value="tarifa_inicial">Tarifa inicial / estructura inicial</option>
+          </select>
+        </label>
         <label class="tool-field">
           <span>Tipo de informe</span>
           <select id="report_type">
@@ -49,14 +67,11 @@
             <option value="cargo_tarifario">IT con Cargo Tarifario</option>
           </select>
         </label>
-        <div class="tool-field">
-          <span>Salida</span>
-          <div style="min-height:43px;display:flex;align-items:center;color:var(--text-muted);font-size:12px">Documento Word editable · formato .docx</div>
-        </div>
         <div class="tool-actions">
           <button class="action" id="btn_reset" type="button">Restablecer valores</button>
         </div>
       </div>
+      <p class="page-note" style="margin-bottom:0">Los seis perfiles reproducen las variantes observadas en los modelos: minorista/mayorista y agua/saneamiento. La modalidad “Tarifa inicial” cambia además la estructura del informe.</p>
     </div>
   </section>
 
@@ -66,7 +81,8 @@
       <button class="it-nav-btn" data-section="procedimiento" type="button">2. Procedimiento</button>
       <button class="it-nav-btn" data-section="analisis" type="button">3. Análisis tarifario</button>
       <button class="it-nav-btn" data-section="cargo" type="button">4. Cargo Tarifario</button>
-      <button class="it-nav-btn" data-section="textos" type="button">5. Textos y anexos</button>
+      <button class="it-nav-btn" data-section="textos" type="button">5. Redacción</button>
+      <button class="it-nav-btn" data-section="visuales" type="button">6. Cuadros e imágenes</button>
     </nav>
 
     <form id="it_form">
@@ -76,16 +92,15 @@
           <p>Identificación del expediente, la prestadora y el objeto del informe.</p>
           <div class="it-fields">
             <label class="tool-field full"><span>Fecha del documento</span><input data-field="fecha_documento" value="Córdoba, xx de xx de 2026.-"></label>
-            <label class="tool-field"><span>Expediente</span><input data-field="expediente" value="0521-XXX/2026"></label>
+            <label class="tool-field"><span>Expediente</span><input data-field="expediente" value="Expte. N.º 0521-XXX/2026"></label>
             <label class="tool-field"><span>Asunto</span><input data-field="asunto" value="REVISIÓN TARIFARIA"></label>
             <label class="tool-field"><span>N.º de IT</span><input data-field="numero_it" value="XX"></label>
             <label class="tool-field"><span>Año</span><input data-field="anio_it" value="2026"></label>
             <label class="tool-field full"><span>Prestadora</span><input data-field="nombre_prestadora" value="Nombre de la prestadora"></label>
-            <label class="tool-field full"><span>Título de la revisión</span><input data-field="titulo_revision" value="Revisión Tarifaria"></label>
-            <label class="tool-field"><span>Carácter</span><input data-field="caracter_prestadora" value="prestadora"></label>
-            <label class="tool-field"><span>Servicio</span><input data-field="servicio" value="servicio de agua potable"></label>
-            <label class="tool-field full"><span>Descripción de la prestación</span><input data-field="descripcion_prestacion" value="la prestación del servicio"></label>
-            <label class="tool-field"><span>Fecha de solicitud</span><input data-field="fecha_solicitud" value="xx/xx/2026"></label>
+            <label class="tool-field full"><span>Título del informe</span><input data-field="titulo_revision" value="Revisión Tarifaria - Nombre de la prestadora"></label>
+            <label class="tool-field"><span>Carácter</span><input data-field="caracter_prestadora" placeholder="Se completa según el perfil si queda vacío"></label>
+            <label class="tool-field"><span>Servicio</span><input data-field="servicio" placeholder="Se completa según el perfil si queda vacío"></label>
+            <label class="tool-field"><span>Fecha de solicitud</span><input data-field="fecha_solicitud" value="xx de xx de 2026"></label>
             <label class="tool-field"><span>Porcentaje solicitado</span><input data-field="porcentaje_solicitado" value="xx,xx%"></label>
           </div>
         </div>
@@ -96,15 +111,13 @@
           <h3>Procedimiento y antecedentes</h3>
           <p>Períodos, Audiencia Pública y actos administrativos relevantes.</p>
           <div class="it-fields">
-            <label class="tool-field"><span>Período solicitado</span><input data-field="periodo_solicitado" value="ENERO - OCTUBRE DE 2025"></label>
+            <label class="tool-field"><span>Período solicitado</span><input data-field="periodo_solicitado" value="SEPTIEMBRE 2025 - FEBRERO 2026"></label>
             <label class="tool-field"><span>Fecha de Audiencia Pública</span><input data-field="fecha_audiencia" value="13 de marzo de 2026"></label>
-            <label class="tool-field"><span>Mes/año de Audiencia Pública</span><input data-field="mes_anio_audiencia" value="marzo 2026"></label>
-            <label class="tool-field"><span>Período de análisis</span><input data-field="periodo_analisis" value="ENERO a OCTUBRE DE 2025"></label>
-            <label class="tool-field"><span>Período de índices</span><input data-field="periodo_indices" value="ENERO - OCTUBRE 2025"></label>
-            <label class="tool-field"><span>Mes base de revisión anterior</span><input data-field="mes_base_revision_anterior" value="ENERO DE 2025"></label>
-            <label class="tool-field full"><span>Resolución del cuadro vigente</span><input data-field="resolucion_cuadro_vigente" value="Resolución General N.º xx/2025"></label>
-            <label class="tool-field full"><span>Resolución de convocatoria a Audiencia Pública</span><input data-field="resolucion_convocatoria_audiencia" value="Resolución Particular ERSeP N.º 552 Letra D"></label>
-            <label class="tool-field full"><span>Resolución de liquidación vigente</span><input data-field="resolucion_liquidacion_vigente" value="Resolución General N.º xx/2025"></label>
+            <label class="tool-field"><span>Período de análisis</span><input data-field="periodo_analisis" value="SEPTIEMBRE 2025 A FEBRERO 2026"></label>
+            <label class="tool-field"><span>Período de índices</span><input data-field="periodo_indices" value="SEPTIEMBRE 2025 - FEBRERO 2026"></label>
+            <label class="tool-field"><span>Mes base de revisión anterior</span><input data-field="mes_base_revision_anterior" value="SEPTIEMBRE DE 2025"></label>
+            <label class="tool-field full"><span>Resolución del cuadro vigente</span><input data-field="resolucion_cuadro_vigente" value="Resolución General N.º xx/2025 (Letra D)."></label>
+            <label class="tool-field full"><span>Resolución de convocatoria a Audiencia Pública</span><input data-field="resolucion_convocatoria_audiencia" value="Resolución Particular ERSeP N.º 552 (Letra D) - Convocatoria Audiencia Pública Virtual."></label>
           </div>
         </div>
       </section>
@@ -117,14 +130,10 @@
             <label class="tool-field"><span>Promedio de índices</span><input data-field="promedio_indices" value="XX,XX%"></label>
             <label class="tool-field"><span>Incremento calculado</span><input data-field="incremento_calculado" value="XX,XX%"></label>
             <label class="tool-field"><span>Incremento final sugerido</span><input data-field="incremento_final_sugerido" value="XX,XX%"></label>
-            <label class="tool-field"><span>Cantidad de cuentas</span><input data-field="cantidad_cuentas" value="XXX"></label>
-            <label class="tool-field full"><span>Categorías de la base de facturación</span><input data-field="categorias_base_facturacion" value="doméstico, comercio / servicios, otros usos y terrenos no edificados"></label>
-            <label class="tool-field"><span>Consumo presuntivo (m³)</span><input data-field="consumo_presuntivo_m3" value="15"></label>
-            <label class="tool-field"><span>Mes de actualización de cargos especiales</span><input data-field="mes_actualizacion_cargos_especiales" value="octubre de 2025"></label>
-            <label class="tool-field"><span>Incremento cargos E1/E3</span><input data-field="incremento_cargos_e1_e3" value="XX,XX%"></label>
-            <label class="tool-field"><span>Incremento E1</span><input data-field="incremento_cargos_e1" value="XX,XX%"></label>
-            <label class="tool-field"><span>Incremento E2</span><input data-field="incremento_cargos_e2" value="XX,XX%"></label>
-            <label class="tool-field"><span>Incremento E3</span><input data-field="incremento_cargos_e3" value="XX,XX%"></label>
+            <label class="tool-field"><span>Cantidad de cuentas</span><input data-field="cantidad_cuentas" value=""></label>
+            <label class="tool-field full"><span>Categorías de la base de facturación</span><input data-field="categorias_base_facturacion" value=""></label>
+            <label class="tool-field"><span>Consumo presuntivo (m³)</span><input data-field="consumo_presuntivo_m3" value=""></label>
+            <label class="tool-field"><span>Mes actualización cargos especiales</span><input data-field="mes_actualizacion_cargos_especiales" value=""></label>
           </div>
         </div>
       </section>
@@ -132,7 +141,7 @@
       <section class="card it-section" data-panel="cargo">
         <div class="card-body">
           <h3>Cargo Tarifario</h3>
-          <p>Estos datos se incorporan especialmente cuando se elige “IT con Cargo Tarifario”.</p>
+          <p>Se incorpora únicamente cuando el tipo de informe seleccionado contempla Cargo Tarifario.</p>
           <div class="it-fields">
             <label class="tool-field"><span>IT de la Sección Técnica</span><input data-field="it_seccion_tecnica" value="IT N.º XX/2026"></label>
             <label class="tool-field"><span>Resolución del plan de obras</span><input data-field="resolucion_plan_obras" value="Resolución General ERSeP N.º XX/2026"></label>
@@ -144,34 +153,86 @@
 
       <section class="card it-section" data-panel="textos">
         <div class="card-body">
-          <h3>Textos largos y anexos</h3>
-          <p>Podés pegar análisis ya redactados, referencias a cuadros o contenido complementario.</p>
+          <h3>Redacción técnica</h3>
+          <p>Los campos vacíos se completan con una redacción base. Si se escribe contenido, se utiliza exactamente ese texto.</p>
           <div class="it-fields">
-            <label class="tool-field full"><span>Manifestación en Audiencia Pública</span><textarea data-field="manifestacion_audiencia"></textarea></label>
+            <label class="tool-field full"><span>Introducción</span><textarea data-field="introduccion" placeholder="Opcional: reemplaza la introducción automática."></textarea></label>
+            <label class="tool-field full"><span>Alcance</span><textarea data-field="alcance" placeholder="Opcional: reemplaza el alcance automático."></textarea></label>
             <label class="tool-field full"><span>Antecedentes adicionales</span><textarea data-field="antecedentes_adicionales"></textarea></label>
+            <label class="tool-field full"><span>Texto de la solicitud / introducción del análisis</span><textarea data-field="texto_solicitud"></textarea></label>
+            <label class="tool-field full"><span>Manifestación / tratamiento en Audiencia Pública</span><textarea data-field="manifestacion_audiencia"></textarea></label>
+            <label class="tool-field full"><span>Metodología</span><textarea data-field="metodologia"></textarea></label>
             <label class="tool-field full"><span>Texto del rubro Canon</span><textarea data-field="texto_rubro_canon"></textarea></label>
             <label class="tool-field full"><span>Texto Agua en Bloque</span><textarea data-field="texto_agua_en_bloque"></textarea></label>
-            <label class="tool-field"><span>Tabla de variación del Canon</span><textarea data-field="tabla_variacion_canon"></textarea></label>
-            <label class="tool-field"><span>Tabla Agua en Bloque</span><textarea data-field="tabla_agua_bloque"></textarea></label>
-            <label class="tool-field"><span>Gráfico de variación de índices</span><textarea data-field="grafico_variacion_indices"></textarea></label>
-            <label class="tool-field"><span>Cuadro de estructura de costos</span><textarea data-field="cuadro_estructura_costos"></textarea></label>
-            <label class="tool-field"><span>Gráfico de composición de liquidación</span><textarea data-field="grafico_composicion_liquidacion"></textarea></label>
-            <label class="tool-field"><span>Tabla de base de facturación</span><textarea data-field="tabla_base_facturacion"></textarea></label>
-            <label class="tool-field"><span>Tabla de tarifa media</span><textarea data-field="tabla_comparacion_tarifa_media"></textarea></label>
-            <label class="tool-field"><span>Texto adicional de tarifa media con CT</span><textarea data-field="texto_adicional_cargo_tarifario_tarifa_media"></textarea></label>
-            <label class="tool-field"><span>Tabla de cargos especiales</span><textarea data-field="tabla_variacion_cargos_especiales"></textarea></label>
-            <label class="tool-field"><span>Cargos especiales de cloacas</span><textarea data-field="texto_cargos_especiales_cloacas"></textarea></label>
-            <label class="tool-field"><span>Rebalanceo del Cargo Tarifario</span><textarea data-field="tabla_rebalanceo_cargo_tarifario"></textarea></label>
-            <label class="tool-field"><span>Conclusión adicional</span><textarea data-field="conclusion_adicional"></textarea></label>
-            <label class="tool-field"><span>Anexo — Cuadro tarifario</span><textarea data-field="anexo_cuadro_tarifario"></textarea></label>
-            <label class="tool-field"><span>Anexo — Listado de inversiones</span><textarea data-field="anexo_listado_inversiones"></textarea></label>
+            <label class="tool-field full"><span>Texto Cargos Especiales</span><textarea data-field="texto_cargos_especiales"></textarea></label>
+            <label class="tool-field full"><span>Conclusión</span><textarea data-field="conclusion_adicional"></textarea></label>
+            <label class="tool-field full"><span>Anexo — Cuadro tarifario (texto opcional)</span><textarea data-field="anexo_cuadro_tarifario"></textarea></label>
+            <label class="tool-field full"><span>Anexo — Listado de inversiones (texto opcional)</span><textarea data-field="anexo_listado_inversiones"></textarea></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="card it-section" data-panel="visuales">
+        <div class="card-body">
+          <h3>Cuadros, gráficos e imágenes</h3>
+          <p><strong>Podés copiar un rango de Excel y pegarlo directamente.</strong> Si Excel entrega celdas, se crea una tabla Word editable; si copiás un gráfico, una captura o “Copiar como imagen”, se inserta como imagen.</p>
+
+          <div id="rich_blocks" class="rich-blocks">
+            <article class="rich-block" data-fixed="1">
+              <div class="rich-block-head"><strong>Variación de índices</strong><span>Se ubica dentro del análisis de costos</span></div>
+              <input class="rich-title" value="GRÁFICO N.º 1: Variación de Índices de Precios">
+              <input class="rich-position" type="hidden" value="analisis">
+              <div class="rich-paste" tabindex="0"><span class="rich-paste-main">Pegá acá un gráfico o rango de Excel</span><span class="rich-paste-sub">Ctrl+V · también admite PNG/JPG arrastrado o seleccionado</span></div>
+              <div class="rich-preview" hidden></div>
+              <div class="rich-actions"><button type="button" class="action rich-file-btn">Elegir imagen</button><button type="button" class="action rich-clear-btn">Limpiar</button></div>
+              <input class="rich-file" type="file" accept="image/png,image/jpeg,image/gif,image/bmp" hidden>
+              <input class="rich-source" placeholder="Fuente (opcional)">
+            </article>
+
+            <article class="rich-block" data-fixed="1">
+              <div class="rich-block-head"><strong>Canon</strong><span>Se ubica debajo del texto del rubro Canon</span></div>
+              <input class="rich-title" value="TABLA: Variación del Canon">
+              <input class="rich-position" type="hidden" value="canon">
+              <div class="rich-paste" tabindex="0"><span class="rich-paste-main">Pegá acá una tabla o imagen desde Excel</span><span class="rich-paste-sub">Ctrl+V</span></div>
+              <div class="rich-preview" hidden></div>
+              <div class="rich-actions"><button type="button" class="action rich-file-btn">Elegir imagen</button><button type="button" class="action rich-clear-btn">Limpiar</button></div>
+              <input class="rich-file" type="file" accept="image/png,image/jpeg,image/gif,image/bmp" hidden>
+              <input class="rich-source" placeholder="Fuente (opcional)">
+            </article>
+
+            <article class="rich-block" data-fixed="1">
+              <div class="rich-block-head"><strong>Estructura de costos</strong><span>Se ubica después de Metodología</span></div>
+              <input class="rich-title" value="CUADRO N.º 1: Estructura de Costos">
+              <input class="rich-position" type="hidden" value="metodologia">
+              <div class="rich-paste" tabindex="0"><span class="rich-paste-main">Pegá acá el cuadro de estructura de costos</span><span class="rich-paste-sub">Rango de Excel = tabla editable · imagen = imagen</span></div>
+              <div class="rich-preview" hidden></div>
+              <div class="rich-actions"><button type="button" class="action rich-file-btn">Elegir imagen</button><button type="button" class="action rich-clear-btn">Limpiar</button></div>
+              <input class="rich-file" type="file" accept="image/png,image/jpeg,image/gif,image/bmp" hidden>
+              <input class="rich-source" placeholder="Fuente (opcional)">
+            </article>
+
+            <article class="rich-block" data-fixed="1">
+              <div class="rich-block-head"><strong>Base de facturación / liquidación</strong><span>Se ubica en el análisis de la base</span></div>
+              <input class="rich-title" value="TABLA / GRÁFICO: Base de Facturación">
+              <input class="rich-position" type="hidden" value="base">
+              <div class="rich-paste" tabindex="0"><span class="rich-paste-main">Pegá acá una tabla, gráfico o captura</span><span class="rich-paste-sub">Ctrl+V</span></div>
+              <div class="rich-preview" hidden></div>
+              <div class="rich-actions"><button type="button" class="action rich-file-btn">Elegir imagen</button><button type="button" class="action rich-clear-btn">Limpiar</button></div>
+              <input class="rich-file" type="file" accept="image/png,image/jpeg,image/gif,image/bmp" hidden>
+              <input class="rich-source" placeholder="Fuente (opcional)">
+            </article>
+          </div>
+
+          <div class="rich-add-row">
+            <button type="button" class="action primary" id="btn_add_block">+ Agregar bloque técnico</button>
+            <span>Para cuadros adicionales de agua/cloaca, energía, composición, tarifa media, cargos especiales, anexos, etc.</span>
           </div>
         </div>
       </section>
 
       <div id="alert" class="tool-alert" style="display:none"></div>
       <div class="it-footer-actions">
-        <small>El Word generado queda listo para revisar y completar antes de su incorporación al expediente.</small>
+        <small>El Word generado queda editable. Los rangos pegados desde Excel se convierten en tablas Word y las imágenes se insertan centradas y ajustadas al ancho útil.</small>
         <button class="action primary" id="btn_generate" type="submit">Generar y descargar IT</button>
       </div>
     </form>

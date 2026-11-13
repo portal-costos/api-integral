@@ -86,3 +86,35 @@
 .tool-hero { background:linear-gradient(120deg,#540000 0%,#930000 60%,#ce0202 100%); box-shadow:0 16px 38px rgba(92,0,0,.20); }
 .tool-kicker { color:#ffd0d0; }
 .tool-hero p { color:#f5dddd; }
+
+/* Generador IT v2: bloques técnicos pegables desde Excel / portapapeles */
+.it-config-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.rich-blocks { display:grid; gap:16px; margin-top:18px; }
+.rich-block { border:1px solid var(--border); border-radius:14px; padding:14px; background:var(--bg-subtle); display:grid; gap:10px; }
+.rich-block-head { display:flex; justify-content:space-between; align-items:center; gap:12px; color:var(--text); }
+.rich-block-head strong { font-size:13px; }
+.rich-block-head span { color:var(--text-faint); font-size:11px; text-align:right; }
+.rich-block input.rich-title, .rich-block input.rich-source, .rich-block select.rich-position, .rich-block textarea.rich-text {
+  width:100%; border:1px solid var(--border); background:var(--card); color:var(--text); border-radius:9px; padding:9px 10px; font:12px var(--font-main); outline:none;
+}
+.rich-block textarea.rich-text { min-height:72px; resize:vertical; line-height:1.45; }
+.rich-block-grid { display:grid; grid-template-columns:2fr 1fr; gap:10px; }
+.rich-paste { min-height:112px; border:2px dashed color-mix(in srgb,var(--accent-mid) 45%,var(--border)); border-radius:12px; background:var(--card); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px; text-align:center; padding:18px; cursor:text; transition:.18s ease; outline:none; }
+.rich-paste:hover, .rich-paste:focus, .rich-paste.dragging { border-color:var(--accent-mid); background:var(--accent-soft); box-shadow:0 0 0 3px var(--accent-glow); }
+.rich-paste.has-content { border-style:solid; min-height:72px; }
+.rich-paste-main { font-size:13px; font-weight:800; color:var(--text); }
+.rich-paste-sub { font-size:11px; color:var(--text-faint); }
+.rich-preview { border:1px solid var(--border); border-radius:10px; padding:10px; background:var(--card); overflow:auto; }
+.rich-preview-meta { font-size:11px; font-weight:800; color:var(--success); margin-bottom:8px; }
+.rich-preview img { display:block; max-width:100%; max-height:320px; margin:0 auto; object-fit:contain; }
+.rich-preview table { width:max-content; min-width:100%; border-collapse:collapse; font-size:10px; }
+.rich-preview th, .rich-preview td { border:1px solid var(--border); padding:4px 6px; white-space:nowrap; }
+.rich-preview small { display:block; margin-top:7px; color:var(--text-faint); }
+.rich-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.rich-actions .action { min-height:34px; padding:7px 10px; font-size:11px; }
+.rich-add-row { margin-top:18px; border-top:1px solid var(--border); padding-top:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.rich-add-row span { color:var(--text-faint); font-size:11px; flex:1; min-width:260px; }
+.rich-remove-btn { border:0; background:var(--danger-soft); color:var(--danger); width:28px; height:28px; border-radius:8px; font-size:20px; line-height:1; cursor:pointer; }
+.clipboard-html-sandbox { position:fixed !important; left:-100000px !important; top:-100000px !important; width:auto !important; height:auto !important; visibility:hidden !important; pointer-events:none !important; }
+@media (max-width:1000px) { .it-config-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:650px) { .it-config-grid, .rich-block-grid { grid-template-columns:1fr; } .rich-block-head { align-items:flex-start; flex-direction:column; } .rich-block-head span { text-align:left; } }
