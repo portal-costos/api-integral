@@ -420,7 +420,7 @@ def _add_content_block(document, block: dict[str, Any]):
 
 
 def _blocks_by_position(blocks: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
-    valid = {"analisis", "canon", "agua_bloque", "metodologia", "base", "cargos", "cargo", "pre_conclusion", "anexo"}
+    valid = {"analisis", "canon", "agua_bloque", "metodologia", "base", "categorias_base", "consumo_presuntivo", "cargos", "cargo", "pre_conclusion", "anexo"}
     grouped = {key: [] for key in valid}
     for block in blocks[:MAX_BLOCKS]:
         if not isinstance(block, dict):
@@ -538,11 +538,17 @@ def _build_revision_report(document, datos: dict[str, Any], tipo: str, profile: 
     _add_legacy_text_or_caption(document, datos, "cuadro_estructura_costos", "CUADRO: Estructura de Costos")
 
     section_no = 5
-    if _text(datos, "cantidad_cuentas") or grouped.get("base") or _text(datos, "tabla_base_facturacion"):
+    if (_text(datos, "cantidad_cuentas") or grouped.get("base") or grouped.get("categorias_base")
+            or grouped.get("consumo_presuntivo") or _text(datos, "tabla_base_facturacion")
+            or _text(datos, "consumo_presuntivo_m3")):
         _add_heading(document, f"{section_no}.", "Análisis de Base de Facturación")
         cuentas = _text(datos, "cantidad_cuentas", "—")
         categorias = _text(datos, "categorias_base_facturacion", "las categorías tarifarias vigentes")
         _add_body_paragraph(document, f"La base de facturación informada comprende {cuentas} cuentas, distribuidas entre {categorias}.")
+        _add_blocks(document, grouped, "categorias_base")
+        if _text(datos, "consumo_presuntivo_m3"):
+            _add_body_paragraph(document, f"Consumo presuntivo: {_text(datos, 'consumo_presuntivo_m3')} m³.")
+        _add_blocks(document, grouped, "consumo_presuntivo")
         _add_blocks(document, grouped, "base")
         _add_legacy_text_or_caption(document, datos, "tabla_base_facturacion", "TABLA: Resumen Base de Facturación")
         _add_legacy_text_or_caption(document, datos, "grafico_composicion_liquidacion", "GRÁFICO: Composición de Liquidación")
@@ -620,6 +626,12 @@ def _build_initial_report(document, datos: dict[str, Any], tipo: str, profile: d
 
     _add_heading(document, "5.", "Estructura Tarifaria Única")
     _add_body_paragraph(document, _text(datos, "texto_etu") or "En este apartado se definen los valores del cuadro tarifario conforme a la Estructura Tarifaria Única y a la normativa regulatoria aplicable.")
+    if _text(datos, "categorias_base_facturacion"):
+        _add_body_paragraph(document, f"Categorías de la base de facturación: {_text(datos, 'categorias_base_facturacion')}.")
+    _add_blocks(document, grouped, "categorias_base")
+    if _text(datos, "consumo_presuntivo_m3"):
+        _add_body_paragraph(document, f"Consumo presuntivo: {_text(datos, 'consumo_presuntivo_m3')} m³.")
+    _add_blocks(document, grouped, "consumo_presuntivo")
     _add_blocks(document, grouped, "base")
     _add_legacy_text_or_caption(document, datos, "tabla_base_facturacion", "CUADRO: Recupero y estructura tarifaria")
 

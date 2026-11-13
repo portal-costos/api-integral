@@ -131,9 +131,31 @@
             <label class="tool-field"><span>Incremento calculado</span><input data-field="incremento_calculado" value="XX,XX%"></label>
             <label class="tool-field"><span>Incremento final sugerido</span><input data-field="incremento_final_sugerido" value="XX,XX%"></label>
             <label class="tool-field"><span>Cantidad de cuentas</span><input data-field="cantidad_cuentas" value=""></label>
-            <label class="tool-field full"><span>Categorías de la base de facturación</span><input data-field="categorias_base_facturacion" value=""></label>
-            <label class="tool-field"><span>Consumo presuntivo (m³)</span><input data-field="consumo_presuntivo_m3" value=""></label>
+            <label class="tool-field full"><span>Categorías de la base de facturación (descripción opcional)</span><input data-field="categorias_base_facturacion" value="" placeholder="Texto opcional para acompañar el cuadro"></label>
+            <label class="tool-field"><span>Consumo presuntivo (m³) (valor opcional)</span><input data-field="consumo_presuntivo_m3" value=""></label>
             <label class="tool-field"><span>Mes actualización cargos especiales</span><input data-field="mes_actualizacion_cargos_especiales" value=""></label>
+          </div>
+          <div class="rich-blocks" aria-label="Cuadros del análisis tarifario">
+            <article class="rich-block" data-fixed="1">
+              <div class="rich-block-head"><strong>Categorías de la base de facturación</strong><span>Se inserta en el apartado de base de facturación</span></div>
+              <input class="rich-title" value="CUADRO: Categorías de la base de facturación" aria-label="Epígrafe categorías">
+              <input class="rich-position" type="hidden" value="categorias_base">
+              <div class="rich-paste" tabindex="0"><span class="rich-paste-main">Pegá aquí las categorías desde Excel</span><span class="rich-paste-sub">Ctrl+V · celdas = tabla Word editable · captura = imagen</span></div>
+              <div class="rich-preview" hidden></div>
+              <div class="rich-actions"><button type="button" class="action rich-file-btn">Elegir imagen</button><button type="button" class="action rich-clear-btn">Limpiar</button></div>
+              <input class="rich-file" type="file" accept="image/png,image/jpeg,image/gif,image/bmp" hidden>
+              <input class="rich-source" placeholder="Fuente (opcional)">
+            </article>
+            <article class="rich-block" data-fixed="1">
+              <div class="rich-block-head"><strong>Consumo presuntivo (m³)</strong><span>Se inserta después de las categorías</span></div>
+              <input class="rich-title" value="CUADRO: Consumo presuntivo (m³)" aria-label="Epígrafe consumo presuntivo">
+              <input class="rich-position" type="hidden" value="consumo_presuntivo">
+              <div class="rich-paste" tabindex="0"><span class="rich-paste-main">Pegá aquí la imagen del consumo presuntivo</span><span class="rich-paste-sub">Ctrl+V · admite también rangos de Excel como tabla editable</span></div>
+              <div class="rich-preview" hidden></div>
+              <div class="rich-actions"><button type="button" class="action rich-file-btn">Elegir imagen</button><button type="button" class="action rich-clear-btn">Limpiar</button></div>
+              <input class="rich-file" type="file" accept="image/png,image/jpeg,image/gif,image/bmp" hidden>
+              <input class="rich-source" placeholder="Fuente (opcional)">
+            </article>
           </div>
         </div>
       </section>
