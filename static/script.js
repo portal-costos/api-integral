@@ -1510,6 +1510,8 @@ document.getElementById("menu_cumple").onclick = () => { window.location.href = 
 document.getElementById("menu_cumple_rrhh").onclick = () => { window.location.href = RRHH_PORTAL_URL; };
 document.getElementById("btn_filtrar").onclick  = () => handleAction("tabla");
 document.getElementById("btn_analizar").onclick = () => handleAction("analisis");
+const btnAnalizarResultados = document.getElementById("btn_analizar_resultados");
+if (btnAnalizarResultados) btnAnalizarResultados.onclick = () => handleAction("analisis");
 const btnActualizarIndices = document.getElementById("btn_actualizar_indices");
 if (btnActualizarIndices) btnActualizarIndices.onclick = handleActualizarIndices;
 const btnDiagnosticarFuentes = document.getElementById("btn_diagnosticar_fuentes");
