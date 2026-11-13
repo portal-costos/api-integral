@@ -4116,7 +4116,10 @@ def ejecutar_actualizacion_indices() -> Dict[str, Any]:
             "traceback": traceback.format_exc(),
         })
 
-    months_to_write = sorted({month for month, _ in updates.keys()})
+    # Crear siempre las filas de todos los meses objetivo, aunque alguna fuente
+    # todavía no haya publicado datos para ese mes. De esta forma, por ejemplo,
+    # octubre existe en la planilla aunque ICC/IPIM sigan cerrados en septiembre.
+    months_to_write = sorted(set(months) | {month for month, _ in updates.keys()})
     rows_by_month = _ensure_month_rows(ws, months_to_write, total_cols=len(headers)) if months_to_write else {}
 
     batch = []

@@ -255,175 +255,219 @@
 
     <div class="card stats-control-card">
       <div class="card-body">
-        <div class="section-heading-row">
-          <div>
-            <span class="section-kicker">Área de consulta</span>
-            <h2>Preparar análisis</h2>
-            <p>Elegí las series y el período. Los resultados aparecen inmediatamente debajo del área de consulta.</p>
+        <div class="stats-workflow-bar" aria-label="Flujo del panel de estadísticas">
+          <div class="stats-tabs" role="tablist" aria-label="Etapas de trabajo">
+            <button class="stats-tab active" type="button" role="tab" aria-selected="true" data-stats-tab="consulta"><span>1</span> Consulta</button>
+            <button class="stats-tab" type="button" role="tab" aria-selected="false" data-stats-tab="resultados"><span>2</span> Resultados</button>
+            <button class="stats-tab" type="button" role="tab" aria-selected="false" data-stats-tab="asistente"><span>3</span> Asistente</button>
+            <button class="stats-tab" type="button" role="tab" aria-selected="false" data-stats-tab="actualizacion"><span>4</span> Actualización</button>
           </div>
-          <div class="selection-counter" aria-live="polite">
-            <strong id="selected_series_count">0</strong>
-            <span>series elegidas</span>
-          </div>
+          <a class="action sheet-link-btn quick-sheet-link" id="btn_abrir_sheet"
+             href="https://docs.google.com/spreadsheets/d/1gF9d5ZBT1Rwa5yq9jJxiXgjwXke5jEAlCM-Qd99XDog/edit?gid=883561078#gid=883561078"
+             target="_blank" rel="noopener noreferrer">Abrir base de datos (Manual) ↗</a>
         </div>
 
-        <div class="main-grid">
-          <div class="series-container">
-            <label class="field-label">1. Buscar y seleccionar índices (Ctrl+Click)</label>
-            <input type="text" id="search_series" class="search-box"
-                   placeholder="Escribe para buscar (ej: 'IPC Córdoba' o 'Alquileres')...">
-            <select id="sel_col" multiple></select>
-            <div class="sel-actions">
-              <button class="btn-sm" id="btn_sel_all" type="button">Seleccionar visibles</button>
-              <button class="btn-sm" id="btn_desel" type="button">Limpiar selección</button>
-            </div>
-          </div>
-
-          <aside class="side-panel">
-            <div class="date-control">
-              <label class="field-label">2. Desde</label>
-              <button class="date-btn" id="btn_pick_desde" type="button">
-                <span class="date-btn-label">Seleccionar mes</span>
-                <span class="date-btn-value" id="txt_desde">-</span>
-              </button>
-              <select id="sel_desde" class="date-select" style="display:none;"></select>
-              <div class="date-step-row" aria-label="Mover fecha desde">
-                <button class="date-step" data-target="desde" data-step="-5" type="button">−5</button>
-                <button class="date-step" data-target="desde" data-step="-1" type="button">−1</button>
-                <span>meses</span>
-                <button class="date-step" data-target="desde" data-step="1" type="button">+1</button>
-                <button class="date-step" data-target="desde" data-step="5" type="button">+5</button>
-              </div>
-            </div>
-
-            <div class="date-control">
-              <label class="field-label">3. Hasta</label>
-              <button class="date-btn" id="btn_pick_hasta" type="button">
-                <span class="date-btn-label">Seleccionar mes</span>
-                <span class="date-btn-value" id="txt_hasta">-</span>
-              </button>
-              <select id="sel_hasta" class="date-select" style="display:none;"></select>
-              <div class="date-step-row" aria-label="Mover fecha hasta">
-                <button class="date-step" data-target="hasta" data-step="-5" type="button">−5</button>
-                <button class="date-step" data-target="hasta" data-step="-1" type="button">−1</button>
-                <span>meses</span>
-                <button class="date-step" data-target="hasta" data-step="1" type="button">+1</button>
-                <button class="date-step" data-target="hasta" data-step="5" type="button">+5</button>
-              </div>
-            </div>
-
-            <div class="btns-group">
-              <button class="action primary" id="btn_filtrar" type="button">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-                Ver tabla de datos filtrados
-              </button>
-              <button class="action success" id="btn_analizar" type="button">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                Calcular variaciones
-              </button>
-              <button class="action" id="btn_copiar" type="button">Copiar tabla</button>
-              <button class="action" id="btn_reload" type="button">Recargar vista desde Drive</button>
-            </div>
-
-            
-          </aside>
-        </div>
-
-
-        
-
-        <section class="results-zone" aria-labelledby="results-zone-title">
-          <div class="results-zone-head">
+        <section class="stats-tab-panel active" id="stats_tab_consulta" data-stats-panel="consulta">
+          <div class="section-heading-row">
             <div>
-              <span class="section-kicker">Salida del análisis</span>
-              <h2 id="results-zone-title">Resultados</h2>
+              <span class="section-kicker">Área de consulta</span>
+              <h2>Preparar análisis</h2>
+              <p>Marcá los índices que necesitás, elegí el período y ejecutá la consulta. Los grupos se pueden abrir y cerrar para evitar una lista interminable.</p>
             </div>
-            <p>Las vistas se actualizan sin alterar la base original.</p>
+            <div class="selection-counter" aria-live="polite">
+              <strong id="selected_series_count">0</strong>
+              <span>series elegidas</span>
+            </div>
           </div>
 
-        <div id="hint" class="hint-toast">✓ ¡Datos copiados al portapapeles!</div>
+          <div class="main-grid">
+            <div class="series-container">
+              <label class="field-label" for="search_series">1. Buscar y seleccionar índices</label>
+              <input type="text" id="search_series" class="search-box"
+                     placeholder="Buscar por nombre: IPC Córdoba, alquileres, IPIM, JUS...">
 
-        <div id="variation_notice" class="variation-notice" style="display:none;" aria-live="polite"></div>
+              <div class="selection-presets" aria-label="Selecciones rápidas">
+                <button class="preset-btn water" id="btn_sel_water" type="button">💧 Autoseleccionar datos de agua</button>
+                <button class="btn-sm" id="btn_sel_all" type="button">Seleccionar visibles</button>
+                <button class="btn-sm" id="btn_desel" type="button">Limpiar</button>
+              </div>
 
-        <div id="view_tabla" class="table-wrap">
-          <table id="tbl"><thead><tr></tr></thead><tbody></tbody></table>
-        </div>
+              <div class="series-group-toolbar">
+                <span>Índices agrupados</span>
+                <div>
+                  <button class="text-btn" id="btn_expand_groups" type="button">Abrir todos</button>
+                  <button class="text-btn" id="btn_collapse_groups" type="button">Cerrar todos</button>
+                </div>
+              </div>
 
-        <div id="view_analisis" class="table-wrap" style="display:none;">
-          <table id="tbl_vars">
-            <thead><tr><th>Índice</th><th style="text-align:right;">Valor inicial</th><th style="text-align:right;">Valor final</th><th style="text-align:right;">Variación % (punta a punta)</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
+              <select id="sel_col" multiple class="series-native-select" aria-hidden="true" tabindex="-1"></select>
+              <div id="series_groups" class="series-groups" aria-live="polite"></div>
+            </div>
 
-        <div id="view_grafico" class="table-wrap" style="display:none;">
-          <div class="chart-header">
-            <div id="chart_title"></div>
-            <div class="chart-subtitle">Variación porcentual punta a punta por índice seleccionado</div>
+            <aside class="side-panel">
+              <div class="date-control">
+                <label class="field-label">2. Desde</label>
+                <button class="date-btn" id="btn_pick_desde" type="button">
+                  <span class="date-btn-label">Seleccionar mes</span>
+                  <span class="date-btn-value" id="txt_desde">-</span>
+                </button>
+                <select id="sel_desde" class="date-select" style="display:none;"></select>
+                <div class="date-step-row" aria-label="Mover fecha desde">
+                  <button class="date-step" data-target="desde" data-step="-5" type="button">−5</button>
+                  <button class="date-step" data-target="desde" data-step="-1" type="button">−1</button>
+                  <span>meses</span>
+                  <button class="date-step" data-target="desde" data-step="1" type="button">+1</button>
+                  <button class="date-step" data-target="desde" data-step="5" type="button">+5</button>
+                </div>
+              </div>
+
+              <div class="date-control">
+                <label class="field-label">3. Hasta</label>
+                <button class="date-btn" id="btn_pick_hasta" type="button">
+                  <span class="date-btn-label">Seleccionar mes</span>
+                  <span class="date-btn-value" id="txt_hasta">-</span>
+                </button>
+                <select id="sel_hasta" class="date-select" style="display:none;"></select>
+                <div class="date-step-row" aria-label="Mover fecha hasta">
+                  <button class="date-step" data-target="hasta" data-step="-5" type="button">−5</button>
+                  <button class="date-step" data-target="hasta" data-step="-1" type="button">−1</button>
+                  <span>meses</span>
+                  <button class="date-step" data-target="hasta" data-step="1" type="button">+1</button>
+                  <button class="date-step" data-target="hasta" data-step="5" type="button">+5</button>
+                </div>
+              </div>
+
+              <div class="btns-group">
+                <button class="action primary" id="btn_filtrar" type="button">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                  Ver tabla de datos filtrados
+                </button>
+                <button class="action success" id="btn_analizar" type="button">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                  Calcular variaciones
+                </button>
+                <button class="action" id="btn_reload" type="button">Recargar vista desde Drive</button>
+              </div>
+            </aside>
           </div>
-          <div id="chart_body"></div>
-        </div>
         </section>
 
-<section class="stats-chat-card" id="stats_chat" aria-labelledby="stats-chat-title">
-          <div class="stats-chat-head">
-            <div>
-              <span class="section-kicker">Consulta en lenguaje natural · sin IA</span>
-              <h2 id="stats-chat-title">Asistente Estadístico</h2>
-              <p>Interpreta reglas, sinónimos, índices y fechas; los datos siempre se consultan desde la API.</p>
-            </div>
-            <span class="chat-free-badge">100% local en el navegador</span>
-          </div>
-          <div class="chat-suggestions" id="chat_suggestions" aria-label="Consultas de ejemplo">
-            <button type="button" data-chat-example="inflación de Córdoba de diciembre 2025 a julio 2026">IPC Córdoba</button>
-            <button type="button" data-chat-example="dame datos del dólar mayorista de enero a agosto de 2026">Dólar A3500</button>
-            <button type="button" data-chat-example="variación del IPIM de productos químicos de diciembre 2025 a julio 2026">IPIM químicos</button>
-            <button type="button" data-chat-example="valor del RIPTE en julio de 2026">RIPTE</button>
-          </div>
-          <div class="chat-thread" id="chat_thread" aria-live="polite">
-            <div class="chat-message bot">
-              <div class="chat-avatar" aria-hidden="true">CyT</div>
-              <div class="chat-bubble">
-                Podés preguntarme por IPC nacional, Córdoba, San Luis o EE.UU.; ICC, IPIM, salarios, RIPTE, dólares, BADLAR, CER, UVA, IOP Córdoba, RAC, VGA, agua en bloque, FAM y el resto de las series disponibles.
+        <section class="stats-tab-panel" id="stats_tab_resultados" data-stats-panel="resultados">
+          <section class="results-zone" aria-labelledby="results-zone-title">
+            <div class="results-zone-head">
+              <div>
+                <span class="section-kicker">Salida del análisis</span>
+                <h2 id="results-zone-title">Resultados</h2>
+              </div>
+              <div class="results-actions">
+                <p>Las vistas se actualizan sin alterar la base original.</p>
+                <button class="action" id="btn_copiar" type="button">Copiar tabla</button>
               </div>
             </div>
-          </div>
-          <form class="chat-composer" id="chat_form">
-            <input id="chat_input" type="text" autocomplete="off"
-                   placeholder="Ej.: ¿cuánto varió el IPC Córdoba entre dic-2025 y jul-2026?">
-            <button id="chat_send" type="submit">Consultar</button>
-          </form>
-          <div class="chat-help">Si una consulta es ambigua —por ejemplo, “inflación” o “dólar”— el asistente te pedirá que elijas la serie correcta en vez de adivinar.</div>
+
+            <div id="hint" class="hint-toast">✓ ¡Datos copiados al portapapeles!</div>
+            <div id="variation_notice" class="variation-notice" style="display:none;" aria-live="polite"></div>
+
+            <div id="view_tabla" class="table-wrap">
+              <table id="tbl"><thead><tr></tr></thead><tbody></tbody></table>
+            </div>
+
+            <div id="view_analisis" class="table-wrap" style="display:none;">
+              <table id="tbl_vars">
+                <thead><tr><th>Índice</th><th style="text-align:right;">Valor inicial</th><th style="text-align:right;">Valor final</th><th style="text-align:right;">Variación % (punta a punta)</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div id="view_grafico" class="table-wrap" style="display:none;">
+              <div class="chart-header">
+                <div id="chart_title"></div>
+                <div class="chart-subtitle">Variación porcentual punta a punta por índice seleccionado</div>
+              </div>
+              <div id="chart_body"></div>
+            </div>
+          </section>
         </section>
 
-        <section class="maintenance-zone" aria-labelledby="maintenance-title">
-          <div class="maintenance-zone-head">
-            <div>
-              <span class="section-kicker">Mantenimiento de la base</span>
-              <h2 id="maintenance-title">Actualización y diagnóstico</h2>
-              <p>Estas acciones administran la fuente de datos y quedan separadas de la consulta cotidiana.</p>
+        <section class="stats-tab-panel" id="stats_tab_asistente" data-stats-panel="asistente">
+          <section class="stats-chat-card" id="stats_chat" aria-labelledby="stats-chat-title">
+            <div class="stats-chat-head">
+              <div>
+                <span class="section-kicker">Consulta guiada en lenguaje natural</span>
+                <h2 id="stats-chat-title">Asistente Estadístico</h2>
+                <p>Reconoce sinónimos, períodos y consultas de seguimiento. También puede buscar el último dato realmente disponible de cada serie.</p>
+              </div>
+              <span class="chat-free-badge">Datos consultados desde la API</span>
             </div>
-          </div>
-<div class="auto-update-box">
-              <div class="auto-update-kicker">Actualización automática</div>
-              <div class="auto-update-title">Google Sheets · últimos 6 meses cerrados</div>
-              <p class="auto-update-text">Actualiza las series en la pestaña <strong>Series originales</strong> y devuelve un reporte técnico.</p>
-              <button class="action primary auto-update-btn" id="btn_actualizar_indices" type="button">
-                <span class="btn-spinner" id="spinner_actualizar_indices" aria-hidden="true"></span>
-                <span id="txt_actualizar_indices">Actualizar Índices Automáticamente 🔄</span>
-              </button>
-              <button class="action auto-update-btn" id="btn_diagnosticar_fuentes" type="button">
-                Diagnosticar fuentes sin modificar la planilla
-              </button>
-              <a class="action sheet-link-btn" id="btn_abrir_sheet"
-                 href="https://docs.google.com/spreadsheets/d/1gF9d5ZBT1Rwa5yq9jJxiXgjwXke5jEAlCM-Qd99XDog/edit?gid=883561078#gid=883561078"
-                 target="_blank" rel="noopener noreferrer">Abrir base de datos (Manual) 🌐</a>
-              <div class="update-status" id="update_status" style="display:none;"></div>
-              <details class="update-report" id="update_report_box" style="display:none;">
-                <summary>Ver reporte técnico</summary>
-                <pre id="update_report"></pre>
+            <div class="chat-suggestions" id="chat_suggestions" aria-label="Consultas de ejemplo">
+              <button type="button" data-chat-example="último dato del IPC Córdoba">Último IPC Córdoba</button>
+              <button type="button" data-chat-example="variación del IPIM de productos químicos de diciembre 2025 a julio 2026">IPIM químicos</button>
+              <button type="button" data-chat-example="compará IPC Córdoba e ICC Córdoba durante 2026">Comparar Córdoba</button>
+              <button type="button" data-chat-example="seleccionar índices de agua">Índices de agua</button>
+            </div>
+            <div class="chat-thread" id="chat_thread" aria-live="polite">
+              <div class="chat-message bot">
+                <div class="chat-avatar" aria-hidden="true">CyT</div>
+                <div class="chat-bubble">
+                  Podés pedirme valores puntuales, variaciones, tablas, últimos datos disponibles o una selección regulatoria de agua. Si una serie está rezagada, te indico el último mes que realmente tiene dato.
+                </div>
+              </div>
+            </div>
+            <form class="chat-composer" id="chat_form">
+              <input id="chat_input" type="text" autocomplete="off"
+                     placeholder="Ej.: último dato de ICC Córdoba Mano de Obra; variación IPC Córdoba ene a sep 2026...">
+              <button id="chat_send" type="submit">Consultar</button>
+            </form>
+            <div class="chat-help">Podés continuar una consulta con frases como “¿y desde enero?”, “¿y para IPIM químicos?” o “último dato”.</div>
+          </section>
+        </section>
+
+        <section class="stats-tab-panel" id="stats_tab_actualizacion" data-stats-panel="actualizacion">
+          <section class="maintenance-zone" aria-labelledby="maintenance-title">
+            <div class="maintenance-zone-head">
+              <div>
+                <span class="section-kicker">Mantenimiento de la base</span>
+                <h2 id="maintenance-title">Actualización y diagnóstico</h2>
+                <p>Primero podés diagnosticar las fuentes sin tocar la planilla. La actualización crea los meses objetivo aunque algunas series todavía estén pendientes de publicación.</p>
+              </div>
+            </div>
+
+            <div class="maintenance-actions-grid">
+              <article class="maintenance-action-card">
+                <span class="maintenance-step">Paso 1 · recomendado</span>
+                <h3>Diagnosticar fuentes</h3>
+                <p>Comprueba qué organismos responden, cuál es su última fecha disponible y qué fuente presenta un error.</p>
+                <button class="action" id="btn_diagnosticar_fuentes" type="button">Diagnosticar sin modificar la planilla</button>
+              </article>
+              <article class="maintenance-action-card primary-card">
+                <span class="maintenance-step">Paso 2</span>
+                <h3>Actualizar índices</h3>
+                <p>Actualiza Google Sheets para los últimos meses objetivo sin borrar valores existentes.</p>
+                <button class="action primary auto-update-btn" id="btn_actualizar_indices" type="button">
+                  <span class="btn-spinner" id="spinner_actualizar_indices" aria-hidden="true"></span>
+                  <span id="txt_actualizar_indices">Actualizar Índices Automáticamente 🔄</span>
+                </button>
+              </article>
+              <article class="maintenance-action-card">
+                <span class="maintenance-step">Acceso directo</span>
+                <h3>Base manual</h3>
+                <p>Abre la hoja original para revisar o editar datos directamente cuando sea necesario.</p>
+                <a class="action sheet-link-btn" id="btn_abrir_sheet_secondary"
+                   href="https://docs.google.com/spreadsheets/d/1gF9d5ZBT1Rwa5yq9jJxiXgjwXke5jEAlCM-Qd99XDog/edit?gid=883561078#gid=883561078"
+                   target="_blank" rel="noopener noreferrer">Abrir base de datos (Manual) ↗</a>
+              </article>
+            </div>
+
+            <div class="update-status" id="update_status" style="display:none;"></div>
+            <details class="update-report" id="update_report_box" style="display:none;">
+              <summary>Ver reporte explicado</summary>
+              <div id="update_report" class="friendly-report"></div>
+              <details class="raw-report-details">
+                <summary>Ver detalle técnico (JSON)</summary>
+                <pre id="update_report_raw"></pre>
               </details>
-            </div>
+            </details>
+          </section>
         </section>
 
       </div>

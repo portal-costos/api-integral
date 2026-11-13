@@ -323,6 +323,7 @@
 
   function detectIntent(queryNorm, dateCount) {
     if (/\b(ayuda|que datos|que indices|que series|indices disponibles|series disponibles)\b/.test(queryNorm)) return "help";
+    if (/\b(ultimo dato|ultimo valor|dato mas reciente|valor mas reciente|valor actual)\b/.test(queryNorm)) return "latest";
     if (/\b(variacion|vario|varia|aumento|aumento|subio|sube|crecio|crece|cambio|punta a punta|porcentaje)\b/.test(queryNorm)) return "variation";
     if (/\bcompar/.test(queryNorm)) return "variation";
     if (/\b(tabla|datos|serie completa|mostrame la serie|mostrar serie|evolucion)\b/.test(queryNorm)) return "table";
@@ -380,6 +381,20 @@
     const m = parsed.mentions;
     let desde = null;
     let hasta = null;
+
+    const rolling = q.match(/\bultimos?\s+(\d{1,2})\s+meses?\b/);
+    if (rolling && CHAT_DATES.length) {
+      const count = Math.max(1, Math.min(60, Number(rolling[1]) || 1));
+      const endIndex = CHAT_DATES.length - 1;
+      const startIndex = Math.max(0, endIndex - count + 1);
+      desde = CHAT_DATES[startIndex].value;
+      hasta = CHAT_DATES[endIndex].value;
+      return { desde, hasta, parsed };
+    }
+    if (/\b(este ano|ano actual)\b/.test(q)) {
+      const range = yearRange(latestAvailableYear());
+      if (range.desde && range.hasta) return { ...range, parsed };
+    }
 
     if (m.length >= 2) {
       if (!m[0].year) m[0].year = m[1].year || yearFromIso(CHAT_CONTEXT.desde) || latestAvailableYear();
@@ -492,7 +507,7 @@
     return `
       <strong>Puedo consultar las series reales de la base.</strong><br>
       Algunos grupos: IPC nacional/Córdoba/San Luis/EE.UU.; ICC INDEC y Córdoba; IPIM y sus rubros; salarios y RIPTE; dólar BNA, A3500, minorista y libre; BADLAR, CER, UVA e ICL; IOP Córdoba; JUS/CPCE; RAC, VGA, KU y cánones de agua; FAM EPEC.<br>
-      <span class="chat-muted">Ejemplos: “variación del IPIM químicos de dic-2025 a jul-2026”, “valor del dólar mayorista en agosto 2026”, “datos del IPC Córdoba durante 2025”.</span>`;
+      <span class="chat-muted">También entiendo “último dato de…”, “últimos 6 meses”, “este año” y “seleccionar índices de agua”. Ejemplos: “último dato de ICC Córdoba Mano de Obra”, “variación del IPIM químicos de dic-2025 a jul-2026”, “datos del IPC Córdoba durante 2025”.</span>`;
   }
 
   function explainMissing(item, desde, hasta) {
@@ -533,6 +548,33 @@
         <thead><tr><th>Serie</th><th>${labelDate(desde)}</th><th>${labelDate(hasta)}</th><th>Variación</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div>`;
+  }
+
+  async function runLatestValue(series) {
+    if (!CHAT_DATES.length) return "La base no tiene fechas disponibles.";
+    const end = CHAT_DATES[CHAT_DATES.length - 1].value;
+    const start = CHAT_DATES[Math.max(0, CHAT_DATES.length - 24)].value;
+    const params = `col_idxs=${encodeURIComponent(series.map(s => s.id).join(","))}&desde=${encodeURIComponent(start)}&hasta=${encodeURIComponent(end)}`;
+    const data = await api(`/api/data?${params}`);
+    const rows = Array.isArray(data.rows) ? data.rows : [];
+
+    const lines = series.map((s, index) => {
+      let found = null;
+      for (let i = rows.length - 1; i >= 0; i -= 1) {
+        const raw = rows[i]?.[index + 1];
+        const hasValue = raw !== null && raw !== undefined && String(raw).trim() !== "" && String(raw).toLowerCase() !== "nan";
+        if (hasValue) {
+          found = { date: rows[i]?.[0], raw };
+          break;
+        }
+      }
+      if (!found) return `<strong>${escapeHtml(s.name)}</strong>: sin dato en los últimos 24 meses`;
+      const numeric = typeof found.raw === "number" ? found.raw : Number(String(found.raw).replace(",", "."));
+      const value = Number.isFinite(numeric) ? formatNumber(numeric) : escapeHtml(found.raw);
+      return `<strong>${escapeHtml(s.name)}</strong>: ${value} <span class="chat-muted">(${labelDate(found.date)})</span>`;
+    });
+
+    return `<strong>Último dato realmente disponible</strong><br>${lines.join("<br>")}<div class="chat-status-line"><span class="chat-status-dot"></span>Se buscó hacia atrás para no confundir rezago de publicación con dato faltante</div>`;
   }
 
   async function runValue(series, dateIso) {
@@ -585,6 +627,12 @@
       return;
     }
 
+    if (/\b(seleccionar|selecciona|autoseleccionar|indices de agua|datos de agua)\b/.test(queryNorm) && /\bagua\b/.test(queryNorm) && typeof window.selectWaterPreset === "function") {
+      const matched = window.selectWaterPreset();
+      appendMessage("bot", `<strong>Listo.</strong> Seleccioné ${matched.length} índices del preset regulatorio de agua. Podés ir a la pestaña <strong>Consulta</strong>, elegir el período y calcular la tabla o las variaciones.`);
+      return;
+    }
+
     const resolution = resolveSeries(query, options.forcedSeriesIds || []);
     if (resolution.ambiguous.length) {
       appendChoices("La consulta puede referirse a más de una serie. Elegí cuál querés usar:", resolution.ambiguous, query);
@@ -596,10 +644,26 @@
       return;
     }
 
+    if (intent === "latest") {
+      setBusy(true);
+      try {
+        syncPanel(series.map(s => s.id), null, null);
+        const html = await runLatestValue(series);
+        appendMessage("bot", html);
+        updateContext(series, null, null, intent);
+      } catch (error) {
+        appendMessage("bot", `No pude completar la consulta. <strong>${escapeHtml(error?.message || "Error desconocido")}</strong>`);
+      } finally {
+        setBusy(false);
+        document.getElementById("chat_input")?.focus();
+      }
+      return;
+    }
+
     const dates = resolveDates(query, intent);
     if (!dates.desde || !dates.hasta) {
       const available = CHAT_DATES.length ? `${labelDate(CHAT_DATES[0].value)} a ${labelDate(CHAT_DATES[CHAT_DATES.length - 1].value)}` : "la base cargada";
-      appendMessage("bot", `Identifiqué <strong>${series.map(s => escapeHtml(s.name)).join(" · ")}</strong>, pero me falta el período. Indicame mes y año de inicio y fin. La base disponible abarca ${available}.`);
+      appendMessage("bot", `Identifiqué <strong>${series.map(s => escapeHtml(s.name)).join(" · ")}</strong>, pero me falta el período. Indicame mes y año de inicio y fin. También podés decir “últimos 6 meses” o “este año”. La base disponible abarca ${available}.`);
       return;
     }
 

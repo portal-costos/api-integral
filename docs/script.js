@@ -128,7 +128,26 @@ let _PICK_SELECTED_YM = null; // "YYYY-MM"
 let _ALL_SERIES = [];
 let _ALL_DATES  = [];
 
-// Set de índices elegidos (CRÍTICO: faltaba)
+// Preset regulatorio solicitado para análisis de agua.
+const WATER_PRESET_RULES = [
+  ["icc cordoba", "mano de obra empalme"],
+  ["ipc cordoba", "electricidad"],
+  ["ipim 24", "productos quimicos"],
+  ["ipim ng", "nivel general"],
+  ["icc cordoba", "nivel general empalme"],
+  ["ipc cordoba servicios"],
+  ["ipc cordoba", "bienes"],
+  ["ipim 34", "vehiculos automotores"],
+  ["ipim 29", "maquinas y equipos"],
+  ["ipc cordoba", "otros combustibles"],
+  ["ipc cordoba", "regulados"],
+  ["ipc cordoba", "alquiler de vivienda"],
+  ["jus", "cordoba"],
+  ["ipc cordoba", "nivel general"],
+  ["ipc cordoba", "seguros y servicios financieros"],
+];
+
+// Set de índices elegidos (fuente única de verdad para selector y asistente).
 const _SELECTED_INDICES = new Set();
 
 // Buffers TSV (para copiar)
@@ -221,13 +240,79 @@ function setUpdateStatus(message, type = "info") {
   el.textContent = message || "";
 }
 
+function escapeUiHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function reportStatusLabel(status) {
+  if (status === "ok") return "Correcto";
+  if (status === "partial") return "Con observaciones";
+  if (status === "error") return "Con errores";
+  return status || "Sin estado";
+}
+
 function renderUpdateReport(data) {
   const box = document.getElementById("update_report_box");
-  const pre = document.getElementById("update_report");
-  if (!box || !pre) return;
-  pre.textContent = JSON.stringify(data, null, 2);
+  const report = document.getElementById("update_report");
+  const raw = document.getElementById("update_report_raw");
+  if (!box || !report) return;
+  if (raw) raw.textContent = JSON.stringify(data, null, 2);
+
+  const status = String(data?.status || (data?.ok ? "ok" : "error"));
+  let html = `<div class="report-summary-head">
+    <span class="report-status ${escapeUiHtml(status)}">${escapeUiHtml(reportStatusLabel(status))}</span>
+    <div><strong>${escapeUiHtml(data?.message || "Resultado del proceso")}</strong>`;
+  if (data?.checked_at) html += `<small>Diagnóstico realizado: ${escapeUiHtml(String(data.checked_at).replace("T", " "))}</small>`;
+  if (data?.finished_at) html += `<small>Finalizado: ${escapeUiHtml(String(data.finished_at).replace("T", " "))}</small>`;
+  html += `</div></div>`;
+
+  if (Array.isArray(data?.results)) {
+    const okCount = data.results.filter(item => item.ok).length;
+    html += `<div class="report-metrics">
+      <div><span>Fuentes revisadas</span><strong>${data.total_fuentes ?? data.results.length}</strong></div>
+      <div><span>Respondieron bien</span><strong>${okCount}</strong></div>
+      <div><span>Con error</span><strong>${data.fallidas ?? (data.results.length - okCount)}</strong></div>
+    </div>`;
+    html += `<div class="report-explainer">Una fuente en rojo significa que el sistema no pudo obtener sus datos. Una fecha anterior al resto puede ser simplemente rezago de publicación del organismo.</div>`;
+    html += `<div class="report-table-wrap"><table class="report-table"><thead><tr><th>Fuente</th><th>Estado</th><th>Último dato</th><th>Filas</th><th>Detalle</th></tr></thead><tbody>`;
+    html += data.results.map(item => `<tr>
+      <td>${escapeUiHtml(item.fuente)}</td>
+      <td><span class="source-state ${item.ok ? "ok" : "error"}">${item.ok ? "OK" : "Error"}</span></td>
+      <td>${escapeUiHtml(item.ultima_fecha || "—")}</td>
+      <td>${escapeUiHtml(item.filas ?? "—")}</td>
+      <td>${escapeUiHtml(item.error || (item.ok ? "Fuente disponible" : "Sin detalle"))}</td>
+    </tr>`).join("");
+    html += `</tbody></table></div>`;
+  } else {
+    html += `<div class="report-metrics">
+      <div><span>Celdas actualizadas</span><strong>${data?.updated_cells ?? 0}</strong></div>
+      <div><span>Pendientes de publicación</span><strong>${data?.pending_count ?? 0}</strong></div>
+      <div><span>Incidencias</span><strong>${data?.issue_count ?? 0}</strong></div>
+      <div><span>Errores de fuente</span><strong>${data?.error_count ?? 0}</strong></div>
+    </div>`;
+    if (Array.isArray(data?.months_requested) && data.months_requested.length) {
+      html += `<div class="report-explainer"><strong>Meses revisados:</strong> ${data.months_requested.map(escapeUiHtml).join(" · ")}</div>`;
+    }
+    const problems = [
+      ...(Array.isArray(data?.errores) ? data.errores.map(x => ({ type: "error", title: x.modulo || "Fuente", text: x.error || "Error sin detalle" })) : []),
+      ...(Array.isArray(data?.incidencias) ? data.incidencias.map(x => ({ type: "warn", title: x.indice || x.modulo || "Incidencia", text: x.motivo || "Revisar configuración" })) : []),
+      ...(Array.isArray(data?.pendientes) ? data.pendientes.slice(0, 12).map(x => ({ type: "pending", title: x.indice || x.modulo || "Pendiente", text: `${x.mes || ""} ${x.motivo || "Dato todavía no publicado"}`.trim() })) : []),
+    ];
+    if (problems.length) {
+      html += `<div class="report-issues">${problems.slice(0, 24).map(item => `<div class="report-issue ${item.type}"><strong>${escapeUiHtml(item.title)}</strong><span>${escapeUiHtml(item.text)}</span></div>`).join("")}</div>`;
+    } else {
+      html += `<div class="report-success-note">No se detectaron incidencias de configuración ni errores de fuente.</div>`;
+    }
+  }
+
+  report.innerHTML = html;
   box.style.display = "block";
-  box.open = Boolean(data?.status !== "ok" || data?.issue_count || data?.error_count);
+  box.open = true;
 }
 
 function setActualizarIndicesLoading(isLoading) {
@@ -334,16 +419,124 @@ async function waitForIndexUpdate(jobId) {
 // FILTRADO EN TIEMPO REAL
 // ════════════════════════════════
 
-function setupFilter(inputId, selectId) {
-  document.getElementById(inputId).addEventListener("input", (e) => {
-    const term    = e.target.value.toLowerCase();
-    const options = document.getElementById(selectId).options;
-    for (let i = 0; i < options.length; i++) {
-      options[i].style.display = options[i].text.toLowerCase().includes(term)
-        ? "" : "none";
-    }
+function normalizeSeriesUiText(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function seriesGroupName(name) {
+  const n = normalizeSeriesUiText(name);
+  if (n.includes("ipc cordoba")) return "IPC Córdoba";
+  if (n.includes("ipc indec") || n.includes("empalme ipc indec")) return "IPC INDEC";
+  if (n.includes("icc cordoba")) return "ICC Córdoba";
+  if (n.includes("icc indec")) return "ICC INDEC";
+  if (n.includes("ipim")) return "IPIM";
+  if (n.includes("salario") || n.includes("ripte")) return "Salarios y RIPTE";
+  if (n.includes("dolar") || n.includes("tipo de cambio") || n.includes("badlar") || n.includes("cer") || n.includes("icl") || n.includes("uva")) return "Moneda, tasas y contratos";
+  if (n.includes("iop cordoba") || n.includes("obras publicas")) return "Obra Pública Córdoba";
+  if (n.includes("vga") || n.includes("agua en bloque") || n.includes("agua cruda") || n.includes("canon precio") || n.includes("rac") || n.includes("fam")) return "Agua, RAC y EPEC";
+  if (n.includes("jus") || n.includes("cpce")) return "JUS y CPCE Córdoba";
+  return "Otros índices";
+}
+
+function renderSeriesCheckboxes() {
+  const container = document.getElementById("series_groups");
+  if (!container) return;
+  const groups = new Map();
+  for (const series of _ALL_SERIES) {
+    const id = String(series.id ?? series.idx ?? "");
+    const name = String(series.name ?? id);
+    if (!id) continue;
+    const group = seriesGroupName(name);
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push({ id, name });
+  }
+
+  container.innerHTML = Array.from(groups.entries()).map(([group, items], index) => `
+    <details class="series-group" ${index < 2 ? "open" : ""} data-group-name="${escapeUiHtml(group)}">
+      <summary><span>${escapeUiHtml(group)}</span><small>${items.length} índices</small></summary>
+      <div class="series-check-list">
+        ${items.map(item => `<label class="series-check-item" data-search="${escapeUiHtml(normalizeSeriesUiText(item.name))}">
+          <input type="checkbox" data-series-id="${escapeUiHtml(item.id)}">
+          <span>${escapeUiHtml(item.name)}</span>
+        </label>`).join("")}
+      </div>
+    </details>`).join("");
+  sincronizarSelectVisual();
+}
+
+function filterSeriesCheckboxes(termRaw) {
+  const term = normalizeSeriesUiText(termRaw);
+  document.querySelectorAll("#series_groups .series-group").forEach(group => {
+    let visibleCount = 0;
+    group.querySelectorAll(".series-check-item").forEach(item => {
+      const visible = !term || (item.dataset.search || "").includes(term);
+      item.hidden = !visible;
+      if (visible) visibleCount += 1;
+    });
+    group.hidden = visibleCount === 0;
+    if (term && visibleCount > 0) group.open = true;
   });
 }
+
+function setupFilter(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input || input.dataset.ready === "1") return;
+  input.dataset.ready = "1";
+  input.addEventListener("input", (e) => filterSeriesCheckboxes(e.target.value));
+}
+
+function setStatsTab(name) {
+  document.querySelectorAll("[data-stats-tab]").forEach(button => {
+    const active = button.dataset.statsTab === name;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-selected", active ? "true" : "false");
+  });
+  document.querySelectorAll("[data-stats-panel]").forEach(panel => {
+    panel.classList.toggle("active", panel.dataset.statsPanel === name);
+  });
+  localStorage.setItem("cyt-stats-tab", name);
+}
+
+function setupStatsTabs() {
+  document.querySelectorAll("[data-stats-tab]").forEach(button => {
+    if (button.dataset.ready === "1") return;
+    button.dataset.ready = "1";
+    button.addEventListener("click", () => setStatsTab(button.dataset.statsTab));
+  });
+  const saved = localStorage.getItem("cyt-stats-tab");
+  setStatsTab(["consulta", "resultados", "asistente", "actualizacion"].includes(saved) ? saved : "consulta");
+}
+
+function findSeriesByPresetRule(rule) {
+  return _ALL_SERIES.find(series => {
+    const n = normalizeSeriesUiText(series.name ?? series.id ?? "");
+    return rule.every(fragment => n.includes(normalizeSeriesUiText(fragment)));
+  });
+}
+
+function selectWaterPreset() {
+  _SELECTED_INDICES.clear();
+  const matched = [];
+  for (const rule of WATER_PRESET_RULES) {
+    const series = findSeriesByPresetRule(rule);
+    const id = series ? String(series.id ?? series.idx ?? "") : "";
+    if (id && !_SELECTED_INDICES.has(id)) {
+      _SELECTED_INDICES.add(id);
+      matched.push(series.name);
+    }
+  }
+  sincronizarSelectVisual();
+  actualizarPanelIndicesElegidos();
+  filterSeriesCheckboxes(document.getElementById("search_series")?.value || "");
+  return matched;
+}
+window.selectWaterPreset = selectWaterPreset;
 // ════════════════════════════════
 // Panel para ver índices elegidos
 // ════════════════════════════════
@@ -389,9 +582,12 @@ function actualizarPanelIndicesElegidos() {
 
 function sincronizarSelectVisual() {
   const select = document.getElementById("sel_col");
-  for (const option of select.options) {
-    option.selected = _SELECTED_INDICES.has(option.value);
+  if (select) {
+    for (const option of select.options) option.selected = _SELECTED_INDICES.has(option.value);
   }
+  document.querySelectorAll("#series_groups input[data-series-id]").forEach(input => {
+    input.checked = _SELECTED_INDICES.has(input.dataset.seriesId);
+  });
 }
 function isPanelCollapsed() {
   return localStorage.getItem("panel_indices_collapsed") === "1";
@@ -570,10 +766,11 @@ async function init() {
       new Map((meta.index_values || []).map(item => [String(item.value), item])).values()
     ).sort((a, b) => String(a.value).localeCompare(String(b.value)));
 
-    // Poblar selector de series
+    // Poblar selector nativo oculto (compatibilidad) y el selector visual por checks.
     document.getElementById("sel_col").innerHTML = _ALL_SERIES
       .map((s) => `<option value="${String(s.id ?? s.idx)}">${s.name}</option>`)
       .join("");
+    renderSeriesCheckboxes();
 
     // Poblar selectores de fechas (ocultos, pero se usan igual)
     const dateHtml = _ALL_DATES
@@ -594,12 +791,15 @@ async function init() {
     if (previous) setPickValue("desde", previous);
     if (last) setPickValue("hasta", last);
 
-    // Activar filtros en tiempo real
-    setupFilter("search_series", "sel_col");
+    // Activar filtros en tiempo real y navegación por etapas.
+    setupFilter("search_series");
+    setupStatsTabs();
 
-    // Status
+    // Status y accesos directos a la base.
     const btnSheet = document.getElementById("btn_abrir_sheet");
+    const btnSheetSecondary = document.getElementById("btn_abrir_sheet_secondary");
     if (btnSheet && meta.sheet_url) btnSheet.href = meta.sheet_url;
+    if (btnSheetSecondary && meta.sheet_url) btnSheetSecondary.href = meta.sheet_url;
 
     document.getElementById("status").textContent =
       `Base conectada · pestaña ${meta.worksheet || "configurada"}`;
@@ -1238,7 +1438,11 @@ async function handleAction(type) {
 
     } else {
       alert("Acción desconocida: " + type);
+      return;
     }
+
+    // Llevar al usuario a la etapa siguiente sin obligarlo a desplazarse por toda la página.
+    setStatsTab("resultados");
 
   } catch (e) {
     alert("Error al procesar la solicitud: " + e.message);
@@ -1252,12 +1456,9 @@ async function handleAction(type) {
 // ════════════════════════════════
 
 document.getElementById("btn_sel_all").onclick = () => {
-  const select = document.getElementById("sel_col");
-  for (const o of select.options) {
-    if (o.style.display !== "none") {
-      _SELECTED_INDICES.add(o.value);
-    }
-  }
+  document.querySelectorAll("#series_groups .series-check-item:not([hidden]) input[data-series-id]").forEach(input => {
+    if (!input.closest(".series-group")?.hidden) _SELECTED_INDICES.add(input.dataset.seriesId);
+  });
   sincronizarSelectVisual();
   actualizarPanelIndicesElegidos();
 };
@@ -1267,6 +1468,28 @@ document.getElementById("btn_desel").onclick = () => {
   sincronizarSelectVisual();
   actualizarPanelIndicesElegidos();
 };
+
+const btnWaterPreset = document.getElementById("btn_sel_water");
+if (btnWaterPreset) btnWaterPreset.onclick = () => {
+  const matched = selectWaterPreset();
+  btnWaterPreset.textContent = `💧 Datos de agua seleccionados (${matched.length})`;
+  window.setTimeout(() => { btnWaterPreset.textContent = "💧 Autoseleccionar datos de agua"; }, 1800);
+};
+
+const seriesGroups = document.getElementById("series_groups");
+if (seriesGroups) seriesGroups.addEventListener("change", event => {
+  const input = event.target.closest("input[data-series-id]");
+  if (!input) return;
+  if (input.checked) _SELECTED_INDICES.add(input.dataset.seriesId);
+  else _SELECTED_INDICES.delete(input.dataset.seriesId);
+  sincronizarSelectVisual();
+  actualizarPanelIndicesElegidos();
+});
+
+const expandGroups = document.getElementById("btn_expand_groups");
+if (expandGroups) expandGroups.onclick = () => document.querySelectorAll("#series_groups .series-group:not([hidden])").forEach(group => { group.open = true; });
+const collapseGroups = document.getElementById("btn_collapse_groups");
+if (collapseGroups) collapseGroups.onclick = () => document.querySelectorAll("#series_groups .series-group").forEach(group => { group.open = false; });
 
 
 // Navegación del portal y accesos directos.
